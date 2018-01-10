@@ -19,7 +19,7 @@ permalink_defaults:
 
 # Directory
 source_dir: source
-public_dir: public
+public_dir: ../../blog
 tag_dir: tags
 archive_dir: archives
 category_dir: categories
@@ -33,7 +33,7 @@ default_layout: post
 titlecase: false # Transform title into titlecase
 external_link: true # Open external links in new tab
 filename_case: 0
-render_drafts: true
+render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
@@ -80,7 +80,7 @@ deploy:
   type: ftpsync
   host: bxu2713700073.my3w.com
   user: bxu2713700073
-  pass: 
+  pass: AB865317
   remote: /htdocs/blog
   port: 
   ignore: 

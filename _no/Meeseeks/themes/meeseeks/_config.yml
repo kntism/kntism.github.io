@@ -4,16 +4,16 @@ language: zh
 
 # main menu navigation
 menu:
-  首页: /poker/
-  归档: /poker/archives
+  首页: /blog/
+  归档: /blog/archives/
 
 # Miscelaneous
 favicon: /
 
 # stylesheets loaded in the <head>
 stylesheets:
-- /poker/css/meeseeks.css
+- /blog/css/meeseeks.css
 
 # scripts loaded in the end of the body
 scripts:
-- /poker/js/meeseeks.js
+- /blog/js/meeseeks.js

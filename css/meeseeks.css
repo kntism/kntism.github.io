@@ -46,6 +46,10 @@ img {
 	margin: auto;
 }
 
+#body-outer {
+	margin: 5px 20px;
+}
+
 #content {
 	margin: 5px 20px;
 }
