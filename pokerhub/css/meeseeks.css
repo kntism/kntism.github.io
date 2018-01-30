@@ -1,0 +1,63 @@
+body{
+    font-family: -apple-system-font, "Helvetica Neue", "PingFang SC",  "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: rgb(100, 100, 100);
+    font-size: 15px; 
+}
+
+h1 {
+	font-size: 22px;
+}
+h2 {
+	font-size: 20px;
+}
+h3 {
+	font-size: 18px;
+}
+h4 {
+	font-size: 16px;
+}
+h1, h2, h3, h4, p {
+	margin: 20px 10px;
+}
+ol, ul {
+	margin: 5px 0px;
+}
+p, li {
+    min-height: 1em;
+    white-space: normal; 
+	-webkit-font-smoothing: antialiased;  
+	text-align: justify; 
+	line-height: 28px; 
+	letter-spacing: 1px; 
+	max-width: 100% !important; 
+	box-sizing: border-box !important; 
+	word-wrap: break-word !important; 
+	text-rendering: optimizelegibility !important;
+}
+blockquote {
+	border-left: 5px solid rgb(200,200, 200);
+	margin-left: 30px;
+	color: rgb(150,150, 150);
+}
+img {
+    display: block;
+	margin: auto;
+}
+
+#body-outer{
+	max-width: 600px;
+	margin: 5px 20px;
+}
+
+#menu-outer{
+	margin: 5px 10px 20px 10px;
+}
+
+#content-outer{
+	margin: 5px 20px;
+}
+
+#bottom-outer{
+	margin: 20px 10px 5px 10px;
+}
+
