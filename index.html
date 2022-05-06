@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Style-Type" content="text/css">
-    <link rel="stylesheet" type="text/css" href="personal-portfolio.css">
+    <link rel="stylesheet" type="text/css" href="style/personal-portfolio.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <title>Hnss - A Person Who Create Things People Need.</title>
 </head>
@@ -71,8 +71,17 @@
     <footer>
         <p>The shortest way to do many things is to only one thing at a time.</p>
         <p>© Created By Hnss. </p>
-        <p><a href="http://www.beian.miit.gov.cn/">粤ICP备17079760号-1</a></p>
+        <p id="beian"><a href="http://www.beian.miit.gov.cn/">粤ICP备17079760号-1</a></p>
     </footer>
+    <script> 
+        function noneDisplay(str) {
+            let h = window.location.host;
+            if(h == "luling.xyz") {
+                document.getElementById(str).style.display = "none";
+            }
+        }
+        window.onload = noneDisplay('beian');
+    </script>
 </body>
 
 </html>
