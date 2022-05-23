@@ -1,29 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500&display=swap');
-:root {
-    --color-brand-primary: #3863d9;
-    --color-line-gray: #b9b9b9;
-    --color-black: #555555;
-    --width-project-min: 250px;
-}
-* {
-    padding: 0;
-    margin: 0;
-}
-html {
-    font-family: "Rubik", sans-serif;
-    font-size: 100%;
-}
-body {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-}
-a {
-    text-decoration: none;
-    color: var(--color-black);
-}
-li {
-    list-style: none;
-}
+@import './base.css';
 
 .container {
     grid-column: 2 / 12;
@@ -31,12 +6,13 @@ li {
 
 /* navbar style */
 .navbar {
-    margin-top: 28px;
+    margin-block-start: 28px;
     border-top: 1px var(--color-line-gray) solid;
-    margin-bottom: 4vw;
+    margin-block-end: 4vw;
 }
 .navbar ul {
     display: flex;
+    justify-content: flex-start;
 }
 .navbar ul li a {
     display: block;
@@ -51,14 +27,18 @@ li {
 
 /* welcome section style */
 .welcome-section {
-    margin-bottom: 5vw;
+    margin-block-end: 5vw;
+    text-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .welcome-section > h2 {
     font-size: calc(16px + 1vw);
     font-weight: 700;
     line-height: 1.35;
     color: var(--color-black);
-    margin-bottom: 0.5em;
+    margin-block-end: 0.5em;
 }
 .welcome-section > p {
     font-size: calc(12px + 0.5vw);
@@ -69,14 +49,15 @@ li {
 
 /* project section style */
 .projects {
-    margin-bottom: 5vw;
+    margin-block-end: 5vw;
+    text-align: start;
 }
 .projects > h2 {
     width: 100%;
     font-size: 28px;
     color: var(--color-brand-primary);
     font-weight: 700;
-    margin-bottom: 24px;
+    margin-block-end: 24px;
 }
 #profile-link, i {
     font-size: 18px;
@@ -97,7 +78,7 @@ li {
     font-size: calc(16px + 0.4vw);
     color: var(--color-black);
     font-weight: 500px;
-    margin-top: 8px;
+    margin-block-start: 8px;
 }
 
 /* footer style */
@@ -107,6 +88,7 @@ li {
     justify-content: space-between;
     padding: 10px 0 80px 0;
     border-top: 1px var(--color-line-gray) solid;
+    text-align: start;
 }
 .footer h3 {
     color: #363636;
@@ -141,6 +123,6 @@ li {
     .footer {
         flex-direction: column-reverse;
         gap: 20px;
-        padding-bottom: 40px;
+        padding-block-end: 40px;
     }
 }
