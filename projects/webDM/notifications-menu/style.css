@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+@import '../../../style/base.css';
 :root{
     --font-fml: 'Inter', sans-serif;
     --color-brandeis-blue: #0072fa;
@@ -8,23 +9,14 @@
     --size-main-font: 16px;
     --size-smaller-font: 14px;
 }
-* {
-    padding: 0;
-    margin: 0;
-}
 html, body {
     font-family: var(--font-fml);
     font-size: var(--size-main-font);
-}
-a {
-    text-decoration: none;
-    color: var(--color-royal-blue);
 }
 
 .container {
     margin: 15px 10px;
     border: 0.5px solid #f3f3f3;
-    box-shadow: 0 2px 4px 1px rgba(31, 31, 31, 0.2);
     border-radius: 8px;
     padding: 18px 12px;
     max-inline-size: var(--size-mobile);
@@ -32,9 +24,6 @@ a {
 
 .title, .messages {
     margin-block-end: 10px;
-}
-.title, .title .mark, .messages, .messages .message, .message .message-content, .message .message-icon .icon-flex {
-    display: flex;
 }
 .title, .title .mark {
     align-items: center;
@@ -115,8 +104,10 @@ a {
 
 .view-action {
     border-top: 2px solid rgb(230, 230, 230);
+    margin-inline: 8px;
 }
 .view-action a {
     display: block;
     margin-block-start: 10px;
+    color: var(--color-royal-blue);
 }

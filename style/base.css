@@ -1,0 +1,118 @@
+/* color config */
+/* font config */
+/* screens config */
+/* space config */
+/* shadow config */
+/* basic elements */
+html {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+/* Layout */
+.flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.inline-flex {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.grid {
+  display: -ms-grid;
+  display: grid;
+}
+
+.inline-grid {
+  display: -ms-inline-grid;
+  display: inline-grid;
+}
+
+/* Flexbox & Grid */
+.flex-col {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.flex-wrap {
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.j-center {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.j-around {
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
+.j-between {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.j-evenly {
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+}
+
+.a-center {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+/* Typography */
+.text-center {
+  text-align: center;
+}
+
+/* Background */
+.bg-center {
+  background-position: center;
+}
+
+.bg-no-repeat {
+  background-repeat: no-repeat;
+}
+
+.bg-cover {
+  background-size: cover;
+}
+
+.bg-contain {
+  background-size: contain;
+}
+
+/* Effects */
+.shadow {
+  -webkit-box-shadow: 0px 2px 4px 1px rgba(31, 31, 31, 0.2);
+          box-shadow: 0px 2px 4px 1px rgba(31, 31, 31, 0.2);
+}
