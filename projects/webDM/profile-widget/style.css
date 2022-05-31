@@ -1,0 +1,114 @@
+@import '../../../style/base.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+:root {
+    --color-neon-blue: #5451fa;
+    --color-pale-lavender: #dcdafe;
+    --color-armadillo: #4a4a4a;
+    --color-aluminum: #979797;
+    --size-small-font: 0.875rem; /*14px*/
+    --size-norm-font: 1.125rem; /*18px*/
+    --size-big-font: 1.5rem; /*24px*/
+    --weight-strong-font: 500;
+}
+
+html,
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--color-neon-blue);
+}
+
+.container {
+    max-inline-size: 414px;
+    background-color: white;
+    margin: 0.5rem 0.7rem;
+    border-radius: 20px;
+    padding: 1.8rem 1.3rem;
+}
+
+.icon-box {
+    gap: 0.5rem;
+    margin-block-end: 2rem;
+}
+.icon-box svg:hover {
+    stroke: var(--color-aluminum);
+}
+
+.info-box {
+    margin-block-end: 2.2rem;
+}
+
+.back-box {
+    margin-block-end: -2.4rem;
+}
+.back-box .back-img {
+    max-inline-size: 100%;
+    block-size: 6.2rem;
+    background-image: url("./assets/background.png");
+    border-radius: 10px;
+}
+.back-box .avatar {
+    top: -3.1rem;
+}
+.back-box .avatar img {
+    inline-size: 7.4rem;
+    block-size: 7.4rem;
+}
+
+.info {
+    margin-block-end: 2.8rem;
+}
+.info .name {
+    font-size: var(--size-big-font);
+    font-weight: var(--weight-strong-font);
+    margin-block-end: 0.5em;
+}
+.info .introduce {
+    font-size: var(--size-small-font);
+    padding: 0 0.4rem;
+    color: var(--color-armadillo);
+}
+
+.follows {
+    gap: 2rem;
+    margin-block-end: 1.5rem;
+}
+.follows .follow .f-data {
+    font-size: var(--size-big-font);
+    font-weight: var(--weight-strong-font);
+    margin-block-end: 0.3em;
+}
+.follows .follow .follows-data {
+    color: var(--color-neon-blue);
+}
+.follows .follow .f-text {
+    font-size: var(--size-small-font);
+    color: var(--color-armadillo);
+}
+.follow-btn a {
+    max-inline-size: 100%;
+    font-size: var(--size-norm-font);
+    color: white;
+    padding: 1.3em 0;
+    border-radius: 10px;
+    font-weight: var(--weight-strong-font);
+    background-color: var(--color-neon-blue);
+}
+.follow-btn a:hover {
+    color: var(--color-neon-blue);
+    background-color: var(--color-pale-lavender);
+}
+
+.other-box {
+    font-size: var(--size-small-font);
+    color: var(--color-armadillo);
+    gap: 1rem;
+    padding: 0 1.1rem 1rem 1.1rem;
+}
+.other-box strong {
+    color: initial;
+    font-weight: var(--weight-strong-font);
+}
+.other-box .other {
+    gap: 0.5em;
+}
