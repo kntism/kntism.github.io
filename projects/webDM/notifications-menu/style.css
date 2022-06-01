@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-@import '../../../style/base.css';
+@import '../../../style/meta.css';
 :root{
     --font-fml: 'Inter', sans-serif;
     --color-brandeis-blue: #0072fa;
