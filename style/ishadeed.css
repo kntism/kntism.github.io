@@ -116,7 +116,7 @@ a {
     text-align: start;
 }
 .footer h3 {
-    color: #363636;
+    color: var(--color-black);
     font-size: clamp(16px, 15px + 0.5vw, 24px);
     font-weight: 400;
     line-height: 1.5;
@@ -139,15 +139,26 @@ a {
 }
 
 /* media style */
-@media (max-width: 1200px) {
+@media screen and (max-width: 1200px) {
     .project-area {
         flex-wrap: wrap;
     }
 }
-@media (max-width: 1000px) {
+@media screen and (max-width: 1000px) {
     .footer {
         flex-direction: column-reverse;
         gap: 20px;
         padding-block-end: 40px;
+    }
+}
+@media screen and (prefers-color-scheme: dark) {
+    :root {
+        --color-brand-primary: #829CE8;
+        --color-line-gray: #364784;
+        --color-black: #cecece;
+        --color-back: #19223e;
+    }
+    body {
+        background-color: var(--color-back);
     }
 }
