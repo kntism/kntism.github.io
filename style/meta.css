@@ -129,12 +129,20 @@ li {
   text-align: center;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .font-12 {
   font-size: 0.75rem;
 }
 
 .font-14 {
   font-size: 0.875rem;
+}
+
+.font-16 {
+  font-size: 1rem;
 }
 
 .font-18 {
