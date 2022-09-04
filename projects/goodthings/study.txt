@@ -1,0 +1,4 @@
+aspect-ratio: 0.88;
+aspect-ratio: 1 / 1;
+object-fit: contain;
+grid-column: auto / span 2;

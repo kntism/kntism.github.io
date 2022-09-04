@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/meta.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Login Screen</title>
+</head>
+<body>
+    <div class="container flex">
+        <main class="form-container flex-1 flex flex-col j-center a-center">
+            <header class="welcome section-gap">
+                <div class="logo text-center section-gap">
+                    <img src="./assets/logo.png" alt="logo" width="50" height="50">
+                </div>
+                <div class="welcome-text text-center">
+                    <h2 class="content-gap">Thank you for choosing us</h2>
+                    <p>Welcome back! Please enter your details below</p>
+                </div>
+            </header>
+            <div class="form-box section-gap">
+                <form class="form flex flex-col" action="#">
+                    <input class="form-input content-gap" type="email" name="email" id="email" placeholder="Enter your email">
+                    <input class="form-input content-gap" type="password" name="password" id="password" placeholder="Password">
+                    <input class="login-btn" type="submit" value="Log In">
+                </form>
+            </div>
+            <div class="or-text section-gap flex j-between a-center">
+                <div class="line flex-1"></div>
+                <div class="or">OR</div>
+                <div class="line flex-1"></div>
+            </div>
+            <div class="btn-box section-gap flex flex-col text-center">
+                <a class="social-btn content-gap flex j-center a-center" href="#">
+                    <img src="./assets/google.png" alt="google" width="24" height="24">
+                    Log In with Google</a>
+                <a class="social-btn content-gap flex j-center a-center" href="#">
+                    <img src="./assets/facebook.png" alt="facebook" width="24" height="24">
+                    Log In with Facebook</a>
+                <a class="social-btn flex j-center a-center" href="#">
+                    <img src="./assets/twitter.png" alt="twitter" width="24" height="24">
+                    Log In with Twitter</a>
+            </div>
+            <footer>
+                <p>Don't have an account yet? <a class="underline" href="#"><strong>Sign up now</strong></a></p>
+            </footer>
+        </main>
+        <aside class="pane-box flex-1 bg-cover bg-center">
+        </aside>
+    </div>
+</body>
+</html>

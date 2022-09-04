@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+@import '/style/meta.css';
+:root{
+    --font-fml: 'Inter', sans-serif;
+    --color-brandeis-blue: #0072fa;
+    --color-royal-blue: #3475dd;
+    --color-white-smoke: #f6f6f6;
+    --size-mobile: 414px;
+    --size-main-font: 16px;
+    --size-smaller-font: 14px;
+}
+html, body {
+    font-family: var(--font-fml);
+    font-size: var(--size-main-font);
+}
+
+.container {
+    margin: 15px 10px;
+    border: 0.5px solid #f3f3f3;
+    border-radius: 8px;
+    padding: 18px 12px;
+    max-inline-size: var(--size-mobile);
+}
+
+.title, .messages {
+    margin-block-end: 10px;
+}
+.title, .title .mark {
+    align-items: center;
+}
+.title, .messages .message {
+    justify-content: space-between;
+}
+.title {
+    font-weight: 600;
+    padding: 0 8px;
+}
+.title > span, .title .mark .mark-action {
+    padding-block-start: 3px;
+}
+.title .mark {
+    gap: 0.2em;
+}
+.title .mark .mark-action {
+    color: var(--color-royal-blue);
+}
+.title .mark .mark-action a {
+    padding-block-end: 3px;
+}
+.title .mark .mark-action a:hover {
+    border-bottom: 2px solid var(--color-royal-blue);
+}
+
+.messages {
+    flex-direction: column;
+}
+.messages .message {
+    padding: calc(16px + 0.5vw) 8px;
+}
+.messages .message:hover {
+    background-color: var(--color-white-smoke);
+    border-radius: 8px;
+}
+.message .is-read {
+    width: 24px;
+    align-self: flex-start;
+    padding-block-start: 3px;
+}
+.message .is-read .unread {
+    width: 10px;
+    height: 10px;
+    background-color: var(--color-brandeis-blue);
+    border-radius: 50%;
+}
+.message .message-content {
+    flex: 1;
+    font-size: var(--size-smaller-font);
+    flex-direction: column;
+    gap: 8px;
+    align-self: flex-start;
+}
+.message .message-content .message-time {
+    color:rgb(175, 175, 175)
+}
+.message .message-icon {
+    width: calc(90px + 1vw);
+}
+.message .message-icon .icon-box {
+    width: 50px;
+    height: 50px;
+    margin-inline: auto;
+    border-radius: 50%;
+    background-color: var(--color-brandeis-blue);
+}
+.message .message-icon .icon-flex {
+    justify-content: center;
+    align-items: center;
+}
+.message .message-icon .face {
+    background-image: url("./img/images.jpeg");
+    background-size: cover;
+    background-position: center;
+}
+
+.view-action {
+    border-top: 2px solid rgb(230, 230, 230);
+    margin-inline: 8px;
+}
+.view-action a {
+    display: block;
+    margin-block-start: 10px;
+    color: var(--color-royal-blue);
+}
