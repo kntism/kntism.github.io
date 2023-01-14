@@ -1,0 +1,34 @@
+html,
+body {
+  font-family: monospace, Roboto, Inter var, system-ui, -apple-system,
+    BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, Noto Sans,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji,
+    sans-serif;
+  font-size: 100%;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+}
+a:hover {
+  font-weight: 600;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome {
+  font-size: 1.3rem;
+}
