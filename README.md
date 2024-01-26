@@ -1,1 +1,1 @@
-Welcome to { [DEV](https://dev.luling.com) }.
+Welcome to { [SITE](https://site.luling.com) }.
