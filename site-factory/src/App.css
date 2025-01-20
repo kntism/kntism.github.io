@@ -1,0 +1,36 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.welcome {
+  font-size: 1.3rem;
+}
+
+.welcome a {
+  text-decoration: none;
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tool {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.updated-date {
+  font-size: 0.8rem;
+  color: #999;
+}

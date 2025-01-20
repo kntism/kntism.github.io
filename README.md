@@ -1,1 +1,1 @@
-Welcome to { [Sites](https://site.luling.xyz) }.
+See All of My Favorite { [Tools](https://site.luling.xyz) }.
