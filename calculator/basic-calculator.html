@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style/style.css" />
+    <title>Basic Calculator</title>
+    <style>
+      .answer {
+        font-size: 30px;
+      }
+      #usersEquationInput {
+        width: 250px;
+        height: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="mainTitle">Basic Calculator</h1>
+    <div class="centerContainer" id="mainContainer">
+      <input
+        type="text"
+        id="usersEquationInput"
+        placeholder="please input equation"
+      />
+    </div>
+    <script src="./src/hinkFrame.js" type="module"></script>
+    <script type="module">
+      import { evaluateExpression } from "./src/math.js";
+      const inputElement = document.getElementById("usersEquationInput");
+      const container = document.getElementById("mainContainer");
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          if (inputElement.value === "") {
+            alert("There is no equation to calculate");
+          } else {
+            const result = evaluateExpression(inputElement.value);
+            container.innerHTML = `<h1 class="answer">${result}</h1>`;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

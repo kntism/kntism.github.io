@@ -1,0 +1,12 @@
+body {
+  background-color: #e2e2e2;
+}
+
+.centerContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.mainTitle {
+  text-align: center;
+}
