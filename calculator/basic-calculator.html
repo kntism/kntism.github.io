@@ -13,6 +13,15 @@
         width: 250px;
         height: 30px;
       }
+      #input {
+        border: 2px solid black;
+        padding: 8px;
+        font-size: 16px;
+        min-height: 40px;
+      }
+      .can-use-func {
+        color: #201dad;
+      }
     </style>
   </head>
   <body>
@@ -24,7 +33,9 @@
         placeholder="please input equation"
       />
     </div>
+    <div class="centerContainer" id="input" contenteditable="true"></div>
     <script src="./src/hinkFrame.js" type="module"></script>
+    <script src="./src/colerInput.js" type="module"></script>
     <script type="module">
       import { evaluateExpression } from "./src/math.js";
       const inputElement = document.getElementById("usersEquationInput");
