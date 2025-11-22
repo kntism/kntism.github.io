@@ -1,86 +1,80 @@
 import { canUseSign, canUseFunc } from "./mainInformation.js";
 
 const canUseFuncLength = [];
-const inputElement = document.getElementById("usersEquationInput");
+const inputElement = document.getElementById("input");
 const container = document.getElementById("mainContainer");
 const hintFrame = document.createElement("div");
 
 hintFrame.className = "hintFrame";
-hintFrame.position = "absolute";
 hintFrame.style.minWidth = "60px";
 hintFrame.style.maxWidth = "80px";
 hintFrame.style.minHeight = "60px";
-hintFrame.style.border = "2px solid #000";
+// hintFrame.style.border = "2px solid #000";
 hintFrame.style.borderRadius = "8px";
-hintFrame.style.backgroundColor = "#f0f8ff";
+hintFrame.style.backgroundColor = "#3271a8ff";
 hintFrame.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.8)";
 hintFrame.style.display = "none";
+hintFrame.style.position = "fixed";
 
 for (let i = 0; i < canUseFunc.length; i++) {
   canUseFuncLength.push(canUseFunc[i].length);
 }
 const maxCanUseFuncLength = Math.max(...canUseFuncLength);
-let lastText = "";
-let newValue = "";
-let start = inputElement.selectionStart; //0
-let end = inputElement.selectionEnd; //0
-inputElement.addEventListener("input", function (event) {
-  //newValue
-  let nowStart = inputElement.selectionStart;
-  let nowText = event.target.value;
 
-  for (let i = 0; i < Math.max(lastText.length, nowText.length); i++) {
-    if (nowText[i] !== lastText[i]) {
-      if (nowStart !== start + 1) {
-        if (nowText[i - 1] === undefined) {
-          newValue = "";
-        } else if (
-          canUseSign.includes(nowText[i - 1]) ||
-          /[^a-zA-Z]/.test(nowText[i - 1])
-        ) {
-          newValue = "";
-        }
-      }
-      console.log(`${nowText[i]} !== ${lastText[i]}`);
-      if (canUseSign.includes(nowText[i]) || /[^a-zA-Z]/.test(nowText[i])) {
-        newValue = "";
-      } else {
-        newValue += nowText[i];
-        console.log(`hinkFrame!!! newValue: ${newValue}`);
-      }
+container.appendChild(hintFrame);
+inputElement.addEventListener("input", function (event) {
+  function getCursorGlobalPosition() {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      return null;
+    }
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    return [rect.left, rect.top];
+  }
+  const [cursorLeft, cursorTop] = getCursorGlobalPosition();
+
+  //newValue
+  const inputValue = inputElement.textContent || "";
+  const inputText = inputValue.match(/([a-zA-Z]+|[^a-zA-Z]+)/g) || [];
+  console.log(`tokens: ${inputText}`);
+  // const startOffset = inputElement.selectionStart;
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  // 获取全局光标偏移量（核心修复）
+  const getGlobalCursorOffset = (el, range) => {
+    const preRange = document.createRange();
+    preRange.selectNodeContents(el);
+    preRange.setEnd(range.endContainer, range.endOffset);
+    return preRange.toString().length;
+  };
+
+  // 替换原 cursorOffset 获取逻辑
+  const startOffset = getGlobalCursorOffset(inputElement, range);
+  console.log(`HINK!!! ${startOffset}`);
+
+  let tokenLength = 0;
+  let cursorToken = "";
+  for (let i = 0; i < inputText.length; i++) {
+    tokenLength += inputText[i].length;
+    if (tokenLength >= startOffset) {
+      cursorToken = inputText[i];
       break;
     }
   }
-  lastText = nowText;
-  // let signPosition = [];
-  // for (let i = 0; i < canUseSign.length; i++) {
-  //   if (event.target.value.includes(canUseSign[i])) {
-  //     signPosition.push(event.target.value.lastIndexOf(canUseSign[i]));
-  //   }
-  // }
-  // if (event.target.value.includes(" ")) {
-  //   signPosition.push(event.target.value.lastIndexOf(" "));
-  // }
-  // const theLastSignPosition =
-  //   signPosition.length > 0 ? Math.max(...signPosition) : null;
-  // if (signPosition.length === 0) {
-  //   newValue = event.target.value;
-  // } else if (theLastSignPosition !== event.target.value.length - 1) {
-  //   newValue = event.target.value.slice(theLastSignPosition + 1);
-  // } else {
-  //   newValue = "";
-  // }
+  let newValue = cursorToken;
   //hint
   hintFrame.textContent = "";
   hintFrame.style.display = "none";
-  console.log("The input is " + event.target.value);
+  console.log("The input is " + inputElement.textContent);
   if (newValue.length <= maxCanUseFuncLength && newValue.length !== 0) {
-    container.appendChild(hintFrame);
     for (let i = 0; i < canUseFunc.length; i++) {
       if (canUseFunc[i].slice(0, newValue.length) === newValue) {
+        hintFrame.style.left = `${cursorLeft}px`;
+        hintFrame.style.top = `${cursorTop + 5}px`;
         hintFrame.style.display = "block";
         hintFrame.innerHTML +=
-          `<p style="line-height: 0">${canUseFunc[i]}<p>` + "<hr/>";
+          `<p style="line-height: 0">${canUseFunc[i]}<p>` + "<hr id='hinkHr'/>";
       }
     }
   }
