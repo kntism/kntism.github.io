@@ -15,6 +15,8 @@ export function evaluateExpression(expression) {
         }
       }
     }
+    ("you can't use '(' without ')'");
+
     //若左括号和右括号数量不一样，返回null
     const leftBracket = expression.replace(/\s+/g, "").match(/\(/g);
     const rightBracket = expression.replace(/\s+/g, "").match(/\)/g);
@@ -166,7 +168,7 @@ export function evaluateExpression(expression) {
               const funcName = tokenExpr[i];
               if (tokenExpr[i + 1] !== undefined) {
                 if (isNaN(+tokenExpr[i + 1])) {
-                  return "yuo can't use function in that way";
+                  return "you can't use function in that way";
                 } else {
                   const radians = (+tokenExpr[i + 1] / 180) * Math.PI;
                 }

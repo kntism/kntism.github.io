@@ -1,111 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="./style/style.css" />
-  <title>Basic Calculator</title>
-  <style>
-    #basicCalculatorMainTitle {
-      color: #4375e2;
-      font-size: 50px;
-      text-align: center;
-    }
-
-    .answer {
-      font-size: 30px;
-    }
-
-    #usersEquationInput {
-      width: 250px;
-      height: 30px;
-    }
-
-    #input {
-      /* border: 4px solid #000; */
-      background-color: #6db2c7;
-      min-width: 300px;
-      min-height: 30px;
-      flex-grow: 1;
-      border-radius: calc(8px - 4px);
-      padding: 8px;
-      font-size: 16px;
-      text-align: left !important;
-    }
-
-    .can-use-func {
-      color: #1d3fad;
-      font-size: 15px;
-      font-weight: bold;
-    }
-
-    #hinkHr {
-      margin: 0;
-      border: none;
-      background-color: #e2e2e2;
-      height: 2px;
-    }
-
-    #mainContainer {
-      display: flex;
-      flex-direction: column;
-      max-height: 700px;
-    }
-
-    #funcGraph {
-      flex-grow: 1;
-      border: 5px solid #747474;
-      border-radius: 8px;
-    }
-
-    .resizeableBox {
-      width: 500px;
-      height: 800px;
-      display: flex;
-      border: 5px solid #747474;
-      border-radius: 8px;
-      align-items: flex-start
-    }
-
-    #basicCalculator {
-      display: flex;
-    }
-  </style>
-</head>
-
-<body>
-  <h1 id="basicCalculatorMainTitle">Basic Calculator</h1>
-  <div id="basicCalculator"><!--flex -->
-    <div id="mainContainer"><!--flex -->
-      <!-- <input type="text" id="usersEquationInput" placeholder="please input equation" />value -->
-      <div class="resizeableBox" id="basicCal"><!--flex -->
-        <div id="input" contenteditable="true"></div>
-      </div>
-      <div class="resizeableBox" id="funcCal"></div><!--flex -->
-      <div class="resizeableBox" id="statisticsCal"></div><!--flex -->
-    </div>
-    <div id="funcGraph"></div>
-  </div>
-
-  <script src="./src/hinkFrame.js" type="module"></script>
-  <script src="./src/colerInput.js" type="module"></script>
-  <script type="module">
-    import { evaluateExpression } from "./src/math.js";
-    const inputElement = document.getElementById("input");
-    const container = document.getElementById("mainContainer");
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        console.log(`cal!!! ${inputElement.textContent}`);
-        if (inputElement.textContent === "") {
-          alert("There is no equation to calculate");
-        } else {
-          const result = evaluateExpression(inputElement.textContent);
-          container.innerHTML = `<h1 class="answer">${result}</h1>`;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style/style.css" />
+    <title>Basic Calculator</title>
+    <style>
+      .abrazineGlassStyle {
+        min-width: 100px;
+        min-height: 30px;
+        background-color: #ffffff11;
+        border-radius: 10px;
+        backdrop-filter: blur(2px);
+        box-shadow: 1px 1px 7px #ddd inset;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
-    });
-  </script>
-</body>
 
+      #hinkFrame {
+        position: fixed;
+        z-index: 9999;
+        font-family: sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+        text-align: center !important;
+      }
+
+      #basicCalculatorMainTitle {
+        color: #4375e2;
+        font-size: 50px;
+        text-align: center;
+      }
+
+      .answer {
+        font-size: 20px;
+      }
+
+      #usersEquationInput {
+        width: 250px;
+        height: 30px;
+      }
+
+      #input {
+        /* border: 4px solid #000; */
+        background-color: #6db2c7;
+        min-width: 300px;
+        min-height: 30px;
+        flex-grow: 1;
+        border-radius: calc(8px - 4px);
+        padding: 8px;
+        font-size: 20px;
+        text-align: left !important;
+        font-family: sans-serif;
+        position: relative;
+        z-index: 1;
+      }
+
+      .inputFrame {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        background-color: #e2e2e2;
+        border-radius: calc(8px - 4px);
+        padding: 0%;
+      }
+
+      .can-use-func {
+        color: #1d3fad;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      #hinkHr {
+        margin: 0;
+        border: none;
+        background-color: #e2e2e2;
+        height: 2px;
+      }
+
+      #mainContainer {
+        display: flex;
+        flex-direction: column;
+        max-height: 700px;
+      }
+
+      #funcGraph {
+        flex-grow: 1;
+        border: 5px solid #747474;
+        border-radius: 8px;
+      }
+
+      .resizeableBox {
+        width: 500px;
+        height: 800px;
+        display: flex;
+        border: 4px solid #747474;
+        border-radius: 8px;
+        align-items: flex-start;
+      }
+
+      #basicCalculator {
+        display: flex;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1 id="basicCalculatorMainTitle">Basic Calculator</h1>
+    <div id="basicCalculator">
+      <!--flex -->
+      <div id="mainContainer">
+        <!--flex -->
+        <!-- <input type="text" id="usersEquationInput" placeholder="please input equation" />value -->
+        <div class="resizeableBox" id="basicCal">
+          <!--flex -->
+          <div class="inputFrame">
+            <div id="input" contenteditable="true"></div>
+          </div>
+        </div>
+        <div class="resizeableBox" id="funcCal"></div>
+        <!--flex -->
+        <div class="resizeableBox" id="statisticsCal"></div>
+        <!--flex -->
+      </div>
+      <div id="funcGraph"></div>
+    </div>
+
+    <script src="./src/hinkFrame.js" type="module"></script>
+    <script src="./src/colerInput.js" type="module"></script>
+    <script type="module">
+      import { evaluateExpression } from "./src/math.js";
+      const inputElement = document.getElementById("input");
+      const container = document.getElementsByClassName("inputFrame")[0];
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          console.log(`cal!!! ${inputElement.textContent}`);
+          if (inputElement.textContent === "") {
+            alert("There is no equation to calculate");
+          } else {
+            const result = evaluateExpression(inputElement.textContent);
+            if (container.querySelector("p.answer")) {
+              container.removeChild(container.querySelector("p.answer"));
+            }
+            container.innerHTML += `<p class="answer">${result}</p>`;
+          }
+        }
+      });
+    </script>
+  </body>
 </html>

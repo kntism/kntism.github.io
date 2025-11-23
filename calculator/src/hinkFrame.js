@@ -5,16 +5,17 @@ const inputElement = document.getElementById("input");
 const container = document.getElementById("mainContainer");
 const hintFrame = document.createElement("div");
 
-hintFrame.className = "hintFrame";
-hintFrame.style.minWidth = "60px";
-hintFrame.style.maxWidth = "80px";
-hintFrame.style.minHeight = "60px";
-// hintFrame.style.border = "2px solid #000";
-hintFrame.style.borderRadius = "8px";
-hintFrame.style.backgroundColor = "#3271a8ff";
-hintFrame.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.8)";
+hintFrame.className = "abrazineGlassStyle";
+hintFrame.id = "hinkFrame";
+
+// hintFrame.style.minWidth = "60px";
+// hintFrame.style.maxWidth = "80px";
+// hintFrame.style.minHeight = "60px";
+// hintFrame.style.borderRadius = "8px";
+// hintFrame.style.backgroundColor = "#3271a8ff";
+// hintFrame.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.8)";
+
 hintFrame.style.display = "none";
-hintFrame.style.position = "fixed";
 
 for (let i = 0; i < canUseFunc.length; i++) {
   canUseFuncLength.push(canUseFunc[i].length);
@@ -76,6 +77,9 @@ inputElement.addEventListener("input", function (event) {
         hintFrame.innerHTML +=
           `<p style="line-height: 0">${canUseFunc[i]}<p>` + "<hr id='hinkHr'/>";
       }
+    }
+    if (hintFrame.lastChild) {
+      hintFrame.removeChild(hintFrame.lastChild);
     }
   }
 });
