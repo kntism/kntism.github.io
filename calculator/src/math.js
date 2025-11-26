@@ -5,6 +5,7 @@ export function evaluateExpression(expression) {
       expression
         .replace(/\s+/g, "")
         .match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\))/g) || [];
+
     //判定返回 null：
     //若有非法函数，返回 null
     const funcInExpr = expression.replace(/\s+/g, "").match(/[a-zA-Z]+/g);
@@ -15,7 +16,6 @@ export function evaluateExpression(expression) {
         }
       }
     }
-    ("you can't use '(' without ')'");
 
     //若左括号和右括号数量不一样，返回null
     const leftBracket = expression.replace(/\s+/g, "").match(/\(/g);
@@ -84,37 +84,37 @@ export function evaluateExpression(expression) {
 
     //格式化
     //多个加减合并（关键）
-    let fitstAddOrMinusPosi = Math.min(
+    let firstAddOrMinusPosi = Math.min(
       tokens.indexOf("+"),
       tokens.indexOf("-")
     );
     let firstPosition = Math.min(tokens.indexOf("+"), tokens.indexOf("-"));
     let minusSignSet = [];
-    if (tokens[fitstAddOrMinusPosi] === "-" && fitstAddOrMinusPosi !== -1) {
+    if (tokens[firstAddOrMinusPosi] === "-" && firstAddOrMinusPosi !== -1) {
       minusSignSet.push(tokens[firstPosition]);
     }
-    if (fitstAddOrMinusPosi !== -1) {
+    if (firstAddOrMinusPosi !== -1) {
       while (
-        tokens[fitstAddOrMinusPosi + 1] === "+" ||
-        tokens[fitstAddOrMinusPosi + 1] === "-"
+        tokens[firstAddOrMinusPosi + 1] === "+" ||
+        tokens[firstAddOrMinusPosi + 1] === "-"
       ) {
-        if (tokens[fitstAddOrMinusPosi + 1] === "-") {
-          minusSignSet.push(tokens[fitstAddOrMinusPosi++ + 1]);
+        if (tokens[firstAddOrMinusPosi + 1] === "-") {
+          minusSignSet.push(tokens[firstAddOrMinusPosi++ + 1]);
         } else {
-          fitstAddOrMinusPosi++;
+          firstAddOrMinusPosi++;
         }
       }
     }
     if (minusSignSet.length % 2 !== 0) {
       tokens.splice(
         firstPosition,
-        fitstAddOrMinusPosi - firstPosition + 1,
+        firstAddOrMinusPosi - firstPosition + 1,
         "-"
       );
     } else {
       tokens.splice(
         firstPosition,
-        fitstAddOrMinusPosi - firstPosition + 1,
+        firstAddOrMinusPosi - firstPosition + 1,
         "+"
       );
     }
@@ -153,7 +153,17 @@ export function evaluateExpression(expression) {
           tokenExpr.includes("cos") ||
           tokenExpr.includes("tan") ||
           tokenExpr.includes("cot") ||
-          tokenExpr.includes("sqrt")
+          tokenExpr.includes("sqrt") ||
+          tokenExpr.includes("log") ||
+          tokenExpr.includes("ln") ||
+          tokenExpr.includes("abs") ||
+          tokenExpr.includes("floor") ||
+          tokenExpr.includes("ceil") ||
+          tokenExpr.includes("round") ||
+          tokenExpr.includes("exp") ||
+          tokenExpr.includes("asin") ||
+          tokenExpr.includes("acos") ||
+          tokenExpr.includes("atan")
         ) {
           //   let i = 0;
           //   while (i < tokenExpr.length)
@@ -163,76 +173,161 @@ export function evaluateExpression(expression) {
               tokenExpr[i] === "cos" ||
               tokenExpr[i] === "tan" ||
               tokenExpr[i] === "cot" ||
-              tokenExpr[i] === "sqrt"
+              tokenExpr[i] === "sqrt" ||
+              tokenExpr[i] === "log" ||
+              tokenExpr[i] === "ln" ||
+              tokenExpr[i] === "abs" ||
+              tokenExpr[i] === "floor" ||
+              tokenExpr[i] === "ceil" ||
+              tokenExpr[i] === "round" ||
+              tokenExpr[i] === "exp" ||
+              tokenExpr[i] === "asin" ||
+              tokenExpr[i] === "acos" ||
+              tokenExpr[i] === "atan"
             ) {
               const funcName = tokenExpr[i];
-              if (tokenExpr[i + 1] !== undefined) {
-                if (isNaN(+tokenExpr[i + 1])) {
-                  return "you can't use function in that way";
-                } else {
-                  const radians = (+tokenExpr[i + 1] / 180) * Math.PI;
+              if (tokenExpr[i + 1] === undefined) {
+                return "you can't use function at the end";
+              }
+
+              if (isNaN(+tokenExpr[i + 1])) {
+                return "you can't use function in that way";
+              }
+
+              const value = +tokenExpr[i + 1];
+              let result;
+
+              switch (funcName) {
+                case "sin": {
+                  const radians = (value / 180) * Math.PI;
+                  result = Math.sin(radians).toString();
+                  break;
+                }
+                case "cos": {
+                  const radians = (value / 180) * Math.PI;
+                  result = Math.cos(radians).toString();
+                  break;
+                }
+                case "tan": {
+                  const radians = (value / 180) * Math.PI;
+                  result = Math.tan(radians).toString();
+                  break;
+                }
+                case "cot": {
+                  const radians = (value / 180) * Math.PI;
+                  result = (1 / Math.tan(radians)).toString();
+                  break;
+                }
+                case "sqrt":
+                  if (value < 0) return "square root of negative number";
+                  result = Math.sqrt(value).toString();
+                  break;
+                case "log":
+                  if (value <= 0) return "logarithm of non-positive number";
+                  result = Math.log10(value).toString();
+                  break;
+                case "ln":
+                  if (value <= 0)
+                    return "natural logarithm of non-positive number";
+                  result = Math.log(value).toString();
+                  break;
+                case "abs":
+                  result = Math.abs(value).toString();
+                  break;
+                case "floor":
+                  result = Math.floor(value).toString();
+                  break;
+                case "ceil":
+                  result = Math.ceil(value).toString();
+                  break;
+                case "round":
+                  result = Math.round(value).toString();
+                  break;
+                case "exp":
+                  result = Math.exp(value).toString();
+                  break;
+                case "asin": {
+                  if (value < -1 || value > 1)
+                    return "asin input out of range [-1, 1]";
+                  const radians = Math.asin(value);
+                  result = ((radians * 180) / Math.PI).toString();
+                  break;
+                }
+                case "acos": {
+                  if (value < -1 || value > 1)
+                    return "acos input out of range [-1, 1]";
+                  const radians = Math.acos(value);
+                  result = ((radians * 180) / Math.PI).toString();
+                  break;
+                }
+                case "atan": {
+                  const radians = Math.atan(value);
+                  result = ((radians * 180) / Math.PI).toString();
+                  break;
                 }
               }
-              switch (funcName) {
-                case "sin":
-                  tokenExpr.splice(i, 2, Math.sin(radians).toString());
-                  break;
-                case "cos":
-                  tokenExpr.splice(i, 2, Math.cos(radians).toString());
-                  break;
-                case "tan":
-                  tokenExpr.splice(i, 2, Math.tan(radians).toString());
-                  break;
-                case "cot":
-                  tokenExpr.splice(i, 2, (1 / Math.tan(radians)).toString());
-                  break;
-                case "sqrt":
-                  tokenExpr.splice(
-                    i,
-                    2,
-                    Math.sqrt(+tokenExpr[i + 1]).toString()
-                  );
-                  break;
-              }
+
+              tokenExpr.splice(i, 2, result);
+              i--; // Adjust index since we modified the array
             }
           }
         }
         // 处理加减乘除
         for (let i = 0; i < tokenExpr.length; i++) {
           if (tokenExpr[i] === "*" || tokenExpr[i] === "/") {
-            const a = +tokenExpr[i - 1],
-              b = +tokenExpr[i + 1];
+            // 检查边界条件
+            if (i === 0 || i === tokenExpr.length - 1) {
+              return "Invalid expression";
+            }
+
+            const a = +tokenExpr[i - 1];
+            const b = +tokenExpr[i + 1];
+
+            // 检查操作数是否为有效数字
+            if (isNaN(a) || isNaN(b)) {
+              return "Invalid operands";
+            }
+
             if (tokenExpr[i] === "/" && b === 0) return "Division by zero";
             tokenExpr.splice(
               i - 1,
               3,
               (tokenExpr[i] === "*" ? a * b : a / b).toString()
             );
+            i -= 2; // Adjust index since we modified the array
           }
         }
 
         for (let i = 0; i < tokenExpr.length; i++) {
           if (tokenExpr[i] === "+" || tokenExpr[i] === "-") {
-            const a = +tokenExpr[i - 1],
-              b = +tokenExpr[i + 1];
+            // 检查边界条件
+            if (i === 0 || i === tokenExpr.length - 1) {
+              return "Invalid expression";
+            }
+
+            const a = +tokenExpr[i - 1];
+            const b = +tokenExpr[i + 1];
+
+            // 检查操作数是否为有效数字
+            if (isNaN(a) || isNaN(b)) {
+              return "Invalid operands";
+            }
+
             tokenExpr.splice(
               i - 1,
               3,
               (tokenExpr[i] === "+" ? a + b : a - b).toString()
             );
+            i -= 2; // Adjust index since we modified the array
           }
         }
 
         if (tokenExpr.length !== 1) {
-          console.log("计算过程有问题");
-          console.log(tokenExpr.length);
-          console.log(tokenExpr);
           return undefined; // 明确返回 undefined
         } else {
           return String(tokenExpr[0]);
         }
       } catch (e) {
-        console.log(e);
         return undefined; // 出现异常时也返回 undefined
       }
     };
@@ -244,9 +339,13 @@ export function evaluateExpression(expression) {
         }
         const n = tokens.indexOf(")", m);
         const result = calc(tokens.slice(m + 1, n));
+        if (result === undefined) {
+          return "calculation error in brackets";
+        }
         if (!isNaN(+result)) {
-          console.log("可以计算");
           tokens.splice(m, n - m + 1, result);
+        } else {
+          return result; // Return the error message
         }
       }
     }
@@ -254,8 +353,6 @@ export function evaluateExpression(expression) {
     const finalResult = calc(tokens);
     if (finalResult === undefined) {
       return "the final result is undefined";
-    } else if (finalResult === NaN) {
-      return String(tokens);
     }
     return Number(Number(finalResult).toFixed(5));
   } catch (error) {

@@ -47,10 +47,10 @@ inputElement.addEventListener("input", function (event) {
 
   console.log(`coloerInput: ${inputText}`);
   //添加文本高亮
-  inputElement.innerHTML = '';
+  inputElement.innerHTML = "";
   for (let token of inputText) {
-    const span = document.createElement('span');
-    if (canUseFunc.includes(token)) span.classList.add('can-use-func');
+    const span = document.createElement("span");
+    if (canUseFunc.includes(token)) span.classList.add("can-use-func");
     span.textContent = token;
     inputElement.appendChild(span);
   }
@@ -69,5 +69,4 @@ inputElement.addEventListener("input", function (event) {
     newRange.setStart(inputElement, 0);
   }
   // 应用新的 Range（恢复光标）
-
 });
