@@ -84,64 +84,77 @@ export function evaluateExpression(expression) {
 
     //格式化
     //多个加减合并（关键）
-    let firstAddOrMinusPosi = Math.min(
-      tokens.indexOf("+"),
-      tokens.indexOf("-")
-    );
-    let firstPosition = Math.min(tokens.indexOf("+"), tokens.indexOf("-"));
+    const plusIndex = tokens.indexOf("+");
+    const minusIndex = tokens.indexOf("-");
+    let firstAddOrMinusPosi = -1;
+
+    if (plusIndex !== -1 && minusIndex !== -1) {
+      firstAddOrMinusPosi = Math.min(plusIndex, minusIndex);
+    } else if (plusIndex !== -1) {
+      firstAddOrMinusPosi = plusIndex;
+    } else if (minusIndex !== -1) {
+      firstAddOrMinusPosi = minusIndex;
+    }
+
+        let firstPosition = firstAddOrMinusPosi;
     let minusSignSet = [];
-    if (tokens[firstAddOrMinusPosi] === "-" && firstAddOrMinusPosi !== -1) {
+    if (firstAddOrMinusPosi !== -1 && tokens[firstAddOrMinusPosi] === "-") {
       minusSignSet.push(tokens[firstPosition]);
     }
     if (firstAddOrMinusPosi !== -1) {
       while (
+        firstAddOrMinusPosi + 1 < tokens.length && (
         tokens[firstAddOrMinusPosi + 1] === "+" ||
-        tokens[firstAddOrMinusPosi + 1] === "-"
+        tokens[firstAddOrMinusPosi + 1] === "-")
       ) {
         if (tokens[firstAddOrMinusPosi + 1] === "-") {
-          minusSignSet.push(tokens[firstAddOrMinusPosi++ + 1]);
+          minusSignSet.push(tokens[firstAddOrMinusPosi + 1]);
+          firstAddOrMinusPosi++;
         } else {
           firstAddOrMinusPosi++;
         }
       }
     }
-    if (minusSignSet.length % 2 !== 0) {
-      tokens.splice(
-        firstPosition,
-        firstAddOrMinusPosi - firstPosition + 1,
-        "-"
-      );
-    } else {
-      tokens.splice(
-        firstPosition,
-        firstAddOrMinusPosi - firstPosition + 1,
-        "+"
-      );
+    if (firstAddOrMinusPosi !== -1 && firstPosition !== -1 && minusSignSet.length >= 0) {
+      if (minusSignSet.length % 2 !== 0) {
+        tokens.splice(
+          firstPosition,
+          firstAddOrMinusPosi - firstPosition + 1,
+          "-"
+        );
+      } else {
+        tokens.splice(
+          firstPosition,
+          firstAddOrMinusPosi - firstPosition + 1,
+          "+"
+        );
+      }
     }
-
+    
     //一元加减符合并
-    for (let i = 0; i < tokens.length; i++) {
+        for (let i = 0; i < tokens.length; i++) {
       if (
         (tokens[i] === "-" || tokens[i] === "+") &&
-        (!isObj(tokens[i - 1]) ||
-          tokens[i - 1] === "*" ||
-          tokens[i - 1] === "/")
+        (i === 0 || !isObj(tokens[i - 1]))
       ) {
-        if (!isNaN(+tokens[i + 1])) {
+        // 这是一个一元运算符
+        if (i + 1 < tokens.length && !isNaN(+tokens[i + 1])) {
           tokens.splice(i, 2, tokens[i] + tokens[i + 1]);
-        } else if (/[a-zA-Z]+/.test(tokens[i + 1])) {
+          i--; // 因为删除了一个元素，所以回退索引
+        } else if (i + 1 < tokens.length && /[a-zA-Z]+/.test(tokens[i + 1])) {
           if (tokens[i] === "-") {
             tokens.splice(i, 1, "-1", "*");
           } else {
             tokens.splice(i, 1, "1", "*");
           }
+          i++; // 因为增加了一个元素，所以前进索引
         }
       }
     }
-
+    
     const calc = (tokenExpr) => {
       try {
-        if (!tokenExpr || tokenExpr.length === 0) {
+                if (!tokenExpr || tokenExpr.length === 0) {
           return "0"; // 空表达式返回 0
         }
 
@@ -272,14 +285,10 @@ export function evaluateExpression(expression) {
             }
           }
         }
-        // 处理加减乘除
-        for (let i = 0; i < tokenExpr.length; i++) {
+        // 处理乘除（优先级高）
+        let i = 1;
+        while (i < tokenExpr.length - 1) {
           if (tokenExpr[i] === "*" || tokenExpr[i] === "/") {
-            // 检查边界条件
-            if (i === 0 || i === tokenExpr.length - 1) {
-              return "Invalid expression";
-            }
-
             const a = +tokenExpr[i - 1];
             const b = +tokenExpr[i + 1];
 
@@ -289,22 +298,19 @@ export function evaluateExpression(expression) {
             }
 
             if (tokenExpr[i] === "/" && b === 0) return "Division by zero";
-            tokenExpr.splice(
-              i - 1,
-              3,
-              (tokenExpr[i] === "*" ? a * b : a / b).toString()
-            );
-            i -= 2; // Adjust index since we modified the array
+
+            const result = tokenExpr[i] === "*" ? a * b : a / b;
+            tokenExpr.splice(i - 1, 3, result.toString());
+            i--; // 因为删除了2个元素，所以索引回退
+          } else {
+            i++;
           }
         }
 
-        for (let i = 0; i < tokenExpr.length; i++) {
+        // 处理加减（优先级低）
+        i = 1;
+        while (i < tokenExpr.length - 1) {
           if (tokenExpr[i] === "+" || tokenExpr[i] === "-") {
-            // 检查边界条件
-            if (i === 0 || i === tokenExpr.length - 1) {
-              return "Invalid expression";
-            }
-
             const a = +tokenExpr[i - 1];
             const b = +tokenExpr[i + 1];
 
@@ -313,12 +319,11 @@ export function evaluateExpression(expression) {
               return "Invalid operands";
             }
 
-            tokenExpr.splice(
-              i - 1,
-              3,
-              (tokenExpr[i] === "+" ? a + b : a - b).toString()
-            );
-            i -= 2; // Adjust index since we modified the array
+            const result = tokenExpr[i] === "+" ? a + b : a - b;
+            tokenExpr.splice(i - 1, 3, result.toString());
+            i--; // 因为删除了2个元素，所以索引回退
+          } else {
+            i++;
           }
         }
 

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Test</title>
+</head>
+<body>
+    <h1>Calculator Test</h1>
+    <div>
+        <input type="text" id="testInput" value="1 + 1" placeholder="Enter expression">
+        <button onclick="testCalculation()">Calculate</button>
+        <div id="result"></div>
+    </div>
+
+    <script type="module">
+        import { evaluateExpression } from './src/math.js';
+
+        window.testCalculation = function() {
+            const input = document.getElementById('testInput').value;
+            const result = evaluateExpression(input);
+            document.getElementById('result').textContent = `Result: ${result}`;
+            console.log(`Input: "${input}" -> Result: ${result}`);
+        };
+
+        // Test with "1 + 1" on load
+        window.onload = function() {
+            testCalculation();
+        };
+    </script>
+</body>
+</html>

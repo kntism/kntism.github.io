@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug</title>
+</head>
+<body>
+    <script type="module">
+        import { evaluateExpression } from './src/math.js';
+
+        console.log('Testing "1 + 1":');
+        const result = evaluateExpression("1 + 1");
+        console.log('Result:', result);
+
+        // Let's also test with different expressions
+        console.log('\nTesting "2*3":');
+        console.log('Result:', evaluateExpression("2*3"));
+
+        console.log('\nTesting "1+2+3":');
+        console.log('Result:', evaluateExpression("1+2+3"));
+
+        // Let's test more cases
+        console.log('\nTesting "6/2":');
+        console.log('Result:', evaluateExpression("6/2"));
+
+        console.log('\nTesting "2*3+1":');
+        console.log('Result:', evaluateExpression("2*3+1"));
+    </script>
+</body>
+</html>
