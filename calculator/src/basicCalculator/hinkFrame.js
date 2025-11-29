@@ -1,29 +1,34 @@
-import { canUseSign, canUseFunc } from "./mainInformation.js";
+import { canUseSign, canUseFunc } from "../mainInformation.js";
 
 const canUseFuncLength = [];
-const inputElement = document.getElementById("input");
-const container = document.getElementById("mainContainer");
-const hintFrame = document.createElement("div");
-
-hintFrame.className = "abrazineGlassStyle";
-hintFrame.id = "hinkFrame";
-
-// hintFrame.style.minWidth = "60px";
-// hintFrame.style.maxWidth = "80px";
-// hintFrame.style.minHeight = "60px";
-// hintFrame.style.borderRadius = "8px";
-// hintFrame.style.backgroundColor = "#3271a8ff";
-// hintFrame.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.8)";
-
-hintFrame.style.display = "none";
+const inputElements = document.getElementsByClassName("input");
 
 for (let i = 0; i < canUseFunc.length; i++) {
   canUseFuncLength.push(canUseFunc[i].length);
 }
 const maxCanUseFuncLength = Math.max(...canUseFuncLength);
 
-container.appendChild(hintFrame);
-inputElement.addEventListener("input", function (event) {
+const basicCalculatorContainer = document.getElementById("basicCalculator");
+basicCalculatorContainer.addEventListener("input", function (event) {
+  const inputElement = event.target;
+  // let hintFrame = inputElement.nextElementSibling;
+  // if (!hintFrame || !hintFrame.classList.contains("hint-frame")) {
+  //   hintFrame = document.createElement("div");
+  //   hintFrame.className = "abrazineGlassStyle hinkFrame";
+  //   hintFrame.style.display = "none";
+  //   hintFrame.style.position = "absolute";
+  //   inputElement.parentNode.insertBefore(hintFrame, inputElement.nextSibling);
+  // }
+  const existHinkFrames = document.getElementsByClassName("hinkFrame");
+  if (existHinkFrames.length > 0) {
+    for (const existHinkFrame of existHinkFrames) {
+      existHinkFrame.remove();
+    }
+  }
+  const hintFrame = document.createElement("div");
+  hintFrame.className = "abrazineGlassStyle hinkFrame";
+  hintFrame.style.display = "none";
+  inputElement.parentNode.insertBefore(hintFrame, inputElement.nextSibling);
   function getCursorGlobalPosition() {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
@@ -72,7 +77,7 @@ inputElement.addEventListener("input", function (event) {
     for (let i = 0; i < canUseFunc.length; i++) {
       if (canUseFunc[i].slice(0, newValue.length) === newValue) {
         hintFrame.style.left = `${cursorLeft}px`;
-        hintFrame.style.top = `${cursorTop + 5}px`;
+        hintFrame.style.top = `${cursorTop + 50}px`;
         hintFrame.style.display = "block";
         hintFrame.innerHTML +=
           `<p style="line-height: 0">${canUseFunc[i]}<p>` + "<hr id='hinkHr'/>";

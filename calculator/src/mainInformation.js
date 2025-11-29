@@ -2,6 +2,7 @@ const canUseFunc = [
   "sin",
   "cos",
   "tan",
+  "cot",
   "log",
   "ln",
   "sqrt",

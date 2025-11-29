@@ -10,14 +10,21 @@
         flex-direction: column;
         align-items: center;
       }
+
       .mainTitle {
         font-size: 50px;
         text-align: center;
       }
+
       #buttonToCal {
-        width: 150px;
-        height: 50px;
-        border-radius: 8px;
+        font-size: 40px;
+        color: #3653b3;
+        font-weight: bold;
+      }
+
+      .mainButton:hover {
+        font-size: 50px !important;
+        transition: font-size 0.3s ease;
       }
     </style>
     <title>Cal</title>
@@ -26,14 +33,21 @@
     <main>
       <h1 class="mainTitle">Hello<br />This is a calculator</h1>
       <div class="centerContainer">
-        <button
+        <!-- <button
           id="buttonToCal"
           type="button"
           onclick="window.location.href='./basic-calculator.html'"
         >
           TO THE CALCULATOR
-        </button>
+        </button> -->
+        <p id="buttonToCal" class="mainButton">TO THE CALCULATOR</p>
       </div>
     </main>
+    <script type="module">
+      const buttonToCal = document.getElementById("buttonToCal");
+      buttonToCal.addEventListener("click", () => {
+        window.location.href = "./basic-calculator.html";
+      });
+    </script>
   </body>
 </html>

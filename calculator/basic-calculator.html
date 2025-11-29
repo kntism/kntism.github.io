@@ -7,7 +7,7 @@
     <title>Basic Calculator</title>
     <style>
       .abrazineGlassStyle {
-        min-width: 100px;
+        min-width: 150px;
         min-height: 30px;
         background: transparent;
         outline: none;
@@ -21,11 +21,11 @@
         align-items: center;
       }
 
-      #hinkFrame {
+      .hinkFrame {
         position: fixed;
         z-index: 9999;
         font-family: sans-serif;
-        font-size: 20px;
+        font-size: 40px;
         font-weight: bold;
         color: #fff;
         text-align: center !important;
@@ -34,12 +34,12 @@
       #basicCalculatorMainTitle {
         color: #3653b3;
         text-shadow: 0 0 1px #3653b3;
-        font-size: 50px;
+        font-size: 60px;
         text-align: center;
       }
 
       .answer {
-        font-size: 20px;
+        font-size: 50px;
         display: block;
         margin: 4px 2px;
       }
@@ -49,20 +49,22 @@
         height: 30px;
       }
 
-      #input {
+      .input {
         white-space: pre-wrap;
         word-wrap: break-word;
         word-break: break-all;
         overflow-wrap: break-word;
         background-color: #686868;
         /* width: 100%; */
-        min-height: 30px;
+        min-height: 80px;
+        /* height: 80px; */
         /* flex-grow: 1; */
-        border-radius: calc(8px - 1px);
+        border-radius: 8px;
         padding: 6px;
-        font-size: 20px;
+        font-size: 50px;
         text-align: left !important;
         font-family: sans-serif;
+        text-shadow: 0 0 2px #ffffff;
         position: relative;
         z-index: 1;
         overflow-x: hidden;
@@ -71,19 +73,37 @@
 
       .inputFrame {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         background-color: #686868;
-        border-radius: calc(8px - 1px);
+        border-radius: 8px;
         padding: 0px;
         /* margin: 0px; */
         width: 100%;
         transition: height 1s;
       }
 
+      .inputIndex {
+        width: 40px;
+        height: 100%;
+        border-radius: 8px 0px 0px 8px;
+        background-color: #686868;
+        text-align: center;
+        font-size: 50px;
+        color: #a3a3a3;
+      }
+
+      .inputDetails {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
+        background-color: #686868;
+        border-radius: 0px 8px 8px 0px;
+      }
+
       .can-use-func {
         color: #3653b3;
         text-shadow: 0 0 2px #3653b3;
-        font-size: 20px;
+        font-size: 50px;
         font-weight: bold;
       }
 
@@ -92,18 +112,6 @@
         border: none;
         background-color: #e2e2e2;
         height: 2px;
-      }
-
-      #mainContainer {
-        display: flex;
-        flex-direction: column;
-        max-height: 700px;
-      }
-
-      #funcGraph {
-        flex-grow: 1;
-        /* border: 5px solid #747474; */
-        border-radius: 15px;
       }
 
       .resizeableBox {
@@ -116,7 +124,10 @@
       }
 
       #basicCalculator {
+        width: 100%;
+        height: 100%;
         display: flex;
+        flex-direction: column;
       }
 
       .shadowBox {
@@ -129,116 +140,16 @@
   <body>
     <h1 id="basicCalculatorMainTitle">Basic Calculator</h1>
     <div id="basicCalculator">
-      <!--flex -->
-      <div id="mainContainer">
-        <!--flex -->
-        <!-- <input type="text" id="usersEquationInput" placeholder="please input equation" />value -->
-        <div class="resizeableBox abrazineGlassStyle" id="basicCal">
-          <!--flex -->
-          <div class="inputFrame">
-            <div id="input" contenteditable="true"></div>
-          </div>
+      <div class="inputFrame">
+        <div class="inputIndex">1</div>
+        <div class="inputDetails">
+          <div class="input" contenteditable="true"></div>
         </div>
-        <div class="resizeableBox abrazineGlassStyle" id="funcCal"></div>
-        <!--flex -->
-        <div class="resizeableBox abrazineGlassStyle" id="statisticsCal"></div>
-        <!--flex -->
       </div>
-      <div id="funcGraph" class="abrazineGlassStyle"></div>
     </div>
 
-    <script src="./src/hinkFrame.js" type="module"></script>
-    <script src="./src/colerInput.js" type="module"></script>
-    <script type="module">
-      import { evaluateExpression } from "./src/math.js";
-      const inputElement = document.getElementById("input");
-      const container = document.getElementsByClassName("inputFrame")[0];
-      inputElement.addEventListener("input", function (event) {
-        inputElement.style.removeProperty("height");
-        inputElement.classList.add("min-height");
-      });
-      inputElement.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-          if (container.querySelector("p.answer")) {
-            container.removeChild(container.querySelector("p.answer"));
-            // inputElement.appendChild(answerElement);
-          }
-          console.log(`cal!!! ${container.childNodes}`);
-          if (inputElement.textContent === "") {
-            alert("There is no equation to calculate");
-          } else {
-            const result = evaluateExpression(inputElement.textContent);
-            console.log(`----text content: ${inputElement.textContent}`);
-            const answerElement = document.createElement("p");
-            answerElement.className = "answer";
-            container.appendChild(answerElement);
-            const resultContent = ` = ${result}`;
-            // answerElement.textContent = resultContent;
-            let i = 0; // 声明并初始化计数器
-
-            const typingInterval = setInterval(function () {
-              if (i < resultContent.length) {
-                answerElement.textContent += resultContent[i];
-                i++;
-              } else {
-                clearInterval(typingInterval); // 清除定时器
-              }
-            }, 60);
-
-            /*const inputPadding =
-                getComputedStyle(inputElement).getPropertyValue("padding");
-              const nowInputHeight =
-                inputElement.offsetHeight - 2 * inputPadding;
-              inputElement.classList.remove("min-height");
-              inputElement.style.height = `${nowInputHeight}px`;
-
-              const keyFramesOfInputFrame = [
-                { height: `${inputElement.offsetHeight}px` },
-                { height: `${inputElement.offsetHeight + 50}px` },
-              ];
-
-              const options = {
-                duration: 500, // 动画时长（毫秒）
-                easing: "linear", // 动画缓动函数
-                iterations: 1, // 循环次数（Infinity 无限循环）
-                direction: "normal", // 播放方向（normal/reverse/alternate 等）
-                fill: "forwards", // 动画结束后保持的状态（forwards 保持结束帧）
-              };
-              const animation = container.animate(
-                keyFramesOfInputFrame,
-                options
-              );
-              animation.play();
-              setTimeout(() => {
-                container.appendChild(answerElement);
-              }, 500);
-            }
-            */
-
-            // container.innerHTML += `<p class="answer">${result}</p>`;
-            // const shadowBoxOfInputFrame = document.createElement("div");
-            // shadowBoxOfInputFrame.className = "shadowBox";
-            // const inputFrameStyle = window.getComputedStyle(container);
-            // for (const prop of inputFrameStyle) {
-            //   shadowBoxOfInputFrame.style[prop] = inputFrameStyle[prop];
-            // }
-
-            // shadowBoxOfInputFrame.innerHTML =
-            //   '<div id="input" contenteditable="true"></div>';
-            // shadowBoxOfInputFrame.appendChild(answerElement);
-            // document.body.appendChild(shadowBoxOfInputFrame);
-
-            // const finalHeight = shadowBoxOfInputFrame.offsetHeight;
-            // document.body.removeChild(shadowBoxOfInputFrame);
-
-            // 确保有一个明确的起始高度
-            // const currentHeight = container.offsetHeight;
-            // container.style.height = currentHeight + "px";
-            // container.offsetHeight;
-            // container.style.height = finalHeight + "px";
-          }
-        }
-      });
-    </script>
+    <script src="./src/basicCalculator/hinkFrame.js" type="module"></script>
+    <script src="./src/basicCalculator/colerInput.js" type="module"></script>
+    <script src="./src/basicCalculator/InputEvent.js" type="module"></script>
   </body>
 </html>

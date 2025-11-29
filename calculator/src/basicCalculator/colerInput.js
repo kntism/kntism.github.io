@@ -1,7 +1,19 @@
-import { canUseFunc } from "./mainInformation.js";
-const inputElement = document.getElementById("input");
+import { canUseFunc } from "../mainInformation.js";
+const inputElements = document.getElementsByClassName("input");
+// const inputElement = document.getElementById("input");
 
-inputElement.addEventListener("input", function (event) {
+const basicCalculatorContainer = document.getElementById("basicCalculator");
+basicCalculatorContainer.addEventListener("input", function (event) {
+  // const actualInputElement = event.target;
+  // const actualContainer = actualInputElement.parentElement;
+  // if (actualContainer.querySelector("p.answer")) {
+  //   actualContainer.removeChild(actualContainer.querySelector("p.answer"));
+  // }
+
+  if (!event.target.classList.contains("input")) {
+    return;
+  }
+  const inputElement = event.target;
   //获取输入内容
   const inputValue = inputElement.textContent || "";
   // const inputText = inputValue.replace(/\n/, "").match(/([a - zA - Z] +| [^ a - zA - Z] +) / g) || [];
