@@ -23,4 +23,11 @@ const canUseFunc = [
 
 const canUseSign = ["+", "-", "*", "/"];
 
-export { canUseFunc, canUseSign };
+const canUseUnit = ["deg", "rad"];
+
+const settings = {
+  degreeOrRad: { general: true, degree: false, rad: false },
+  language: { en: true, zh: false },
+};
+
+export { canUseFunc, canUseSign, settings, canUseUnit };

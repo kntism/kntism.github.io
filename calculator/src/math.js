@@ -1,8 +1,34 @@
-import { canUseFunc } from "./mainInformation.js";
+import { settings, canUseUnit } from "./mainInformation.js";
 export function calculate(expr) {
   try {
     //const tokens = expr.replace(/\s+/g, "").match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/)/g) || [];
     const tokens = expr.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\))/g) || [];
+
+    if (settings.degreeOrRad.degree) {
+      for (let i = 0; i < tokens.length; i++) {
+        if (canUseUnit.includes(tokens[i])) {
+          if (isNaN(+tokens[i - 1]))
+            throw new Error(`There is no number before "deg"`);
+          if (tokens[i] === "rad") {
+            throw new Error(`You can't use "rad" in degree mode`);
+          } else if (tokens[i] === "deg") {
+            tokens.splice(i - 1, 2, (+tokens[i - 1] * Math.PI) / 180);
+          }
+        }
+      }
+    } else if (settings.degreeOrRad.rad) {
+      for (let i = 0; i < tokens.length; i++) {
+        if (canUseUnit.includes(tokens[i])) {
+          if (isNaN(+tokens[i - 1]))
+            throw new Error(`There is no number before "rad"`);
+          if (tokens[i] === "deg") {
+            throw new Error(`You can't use "deg" in rad mode`);
+          } else if (tokens[i] === "rad") {
+            tokens.splice(i, i);
+          }
+        }
+      }
+    }
     const cal = (tokenExpr) => {
       let i = 0;
       while (i < tokenExpr.length) {

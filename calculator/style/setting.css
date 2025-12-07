@@ -32,7 +32,7 @@
 
 .choiceOption .choiceShadow {
   position: absolute;
-  padding: 5px;
+  padding: 3px;
   z-index: 1;
   /* min-width: 20px;
   min-height: 20px; */

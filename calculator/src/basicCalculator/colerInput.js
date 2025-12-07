@@ -57,7 +57,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     }
   }
 
-  console.log(`coloerInput: ${inputText}`);
   //添加文本高亮
   inputElement.innerHTML = "";
   for (let token of inputText) {
@@ -66,7 +65,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     span.textContent = token;
     inputElement.appendChild(span);
   }
-  console.log(inputElement.innerHTML);
 
   //恢复光标位置
   // 清除原有选区

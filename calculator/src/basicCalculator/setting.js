@@ -1,5 +1,7 @@
-const angleChoice = document.getElementById("angleChoice");
-const arcChoice = document.getElementById("arcChoice");
+import { settings } from "../mainInformation.js";
+const degreeChoice = document.getElementById("degreeChoice");
+const radChoice = document.getElementById("radChoice");
+const generalChoice = document.getElementById("generalChoice");
 function changeChoice(choice) {
   if (typeof choice === "object" && choice !== null && choice.nodeType === 1) {
     const choiceParent = choice.parentElement;
@@ -12,18 +14,34 @@ function changeChoice(choice) {
     const newWidth = choiceRect.width;
     const newHeight = choiceRect.height;
     choiceShadow.style.left = leftPos - 5 + "px";
-    choiceShadow.style.top = topPos - 5 + "px";
-    choiceShadow.style.width = newWidth + "px";
-    choiceShadow.style.height = newHeight - 2 + "px";
+    choiceShadow.style.top = topPos - 3 + "px";
+    choiceShadow.style.width = newWidth + 2 + "px";
+    choiceShadow.style.height = newHeight + "px";
   }
 }
 
-changeChoice(angleChoice);
+function emptySetting(theme) {
+  for (const key in settings[theme]) {
+    settings[theme][key] = false;
+  }
+}
 
-arcChoice.addEventListener("click", () => {
-  changeChoice(arcChoice);
+changeChoice(generalChoice);
+
+radChoice.addEventListener("click", () => {
+  changeChoice(radChoice);
+  emptySetting("degreeOrRad");
+  settings.degreeOrRad.rad = true;
 });
 
-angleChoice.addEventListener("click", () => {
-  changeChoice(angleChoice);
+degreeChoice.addEventListener("click", () => {
+  changeChoice(degreeChoice);
+  emptySetting("degreeOrRad");
+  settings.degreeOrRad.degree = true;
+});
+
+generalChoice.addEventListener("click", () => {
+  changeChoice(generalChoice);
+  emptySetting("degreeOrRad");
+  settings.degreeOrRad.general = true;
 });

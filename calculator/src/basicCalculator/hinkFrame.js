@@ -1,7 +1,6 @@
 import { canUseSign, canUseFunc } from "../mainInformation.js";
 
 const canUseFuncLength = [];
-const inputElements = document.getElementsByClassName("input");
 
 for (let i = 0; i < canUseFunc.length; i++) {
   canUseFuncLength.push(canUseFunc[i].length);
