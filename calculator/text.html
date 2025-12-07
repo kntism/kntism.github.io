@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style/style.css" />
+    <style>
+      .settingChoice {
+        display: flex;
+        min-width: 100px;
+        min-height: 50px;
+        font-size: 20px;
+      }
+
+      .choiceOption {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-width: 80px;
+        height: 45px;
+        /* background-color: #747474; */
+        border-radius: 25px;
+        margin: 0 15px;
+        padding: 0 20px;
+        color: #fff;
+      }
+
+      .choiceOption .choice {
+        position: relative;
+        z-index: 2; /* 确保文字在最上层 */
+        margin: 0 20px 0 0;
+      }
+
+      .choiceOption .lastChoice {
+        position: relative;
+        z-index: 2; /* 确保文字在最上层 */
+        margin: 0;
+      }
+
+      .choiceOption .choiceShadow {
+        position: absolute;
+        padding: 5px;
+        z-index: 1;
+        min-width: 40px;
+        min-height: 20px;
+        background-color: #6d6d6d;
+        border-radius: 25px;
+        transition: left 0.3s ease, top 0.3s ease, width 0.3s ease,
+          height 0.3s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="settingChoice">
+      <span>angle system or arc system</span>
+      <div class="choiceOption abrazineGlassStyle" id="angle-or-arc">
+        <div class="choiceShadow"></div>
+        <div class="choice" id="angleChoice">angleHello</div>
+        <div class="choice" id="helo">helo</div>
+        <div class="lastChoice" id="arcChoice">arc</div>
+      </div>
+    </div>
+    <script type="module">
+      const angleChoice = document.getElementById("angleChoice");
+      const arcChoice = document.getElementById("arcChoice");
+      const heloChoice = document.getElementById("helo");
+      function changeChoice(choice) {
+        if (
+          typeof choice === "object" &&
+          choice !== null &&
+          choice.nodeType === 1
+        ) {
+          const choiceParent = choice.parentElement;
+          const choiceShadow = choiceParent.querySelector(".choiceShadow");
+          const choiceRect = choice.getBoundingClientRect();
+          const parentRect = choiceParent.getBoundingClientRect();
+
+          const leftPos = choiceRect.left - parentRect.left;
+          const topPos = choiceRect.top - parentRect.top;
+          const newWidth = choiceRect.width;
+          const newHeight = choiceRect.height;
+          choiceShadow.style.left = leftPos - 5 + "px";
+          choiceShadow.style.top = topPos - 5 + "px";
+          choiceShadow.style.width = newWidth + "px";
+          choiceShadow.style.height = newHeight + "px";
+        }
+      }
+
+      changeChoice(angleChoice);
+
+      arcChoice.addEventListener("click", () => {
+        changeChoice(arcChoice);
+      });
+
+      heloChoice.addEventListener("click", () => {
+        changeChoice(heloChoice);
+      });
+
+      angleChoice.addEventListener("click", () => {
+        changeChoice(angleChoice);
+      });
+    </script>
+  </body>
+</html>

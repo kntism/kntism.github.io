@@ -4,31 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style/style.css" />
+    <link rel="stylesheet" href="./style/sidebar.css" />
+    <link rel="stylesheet" href="./style/settingFrame.css" />
+    <link rel="stylesheet" href="./style/setting.css" />
     <title>Basic Calculator</title>
     <style>
-      .abrazineGlassStyle {
-        min-width: 150px;
-        min-height: 30px;
-        background: transparent;
-        outline: none;
-        border: none;
-        /* background-color: #ffffff11; */
-        border-radius: 15px;
-        backdrop-filter: blur(2px);
-        box-shadow: 1px 1px 7px #ddd inset, 2px 2px 15px rgba(0, 0, 0, 0.5);
+      #basicCalculatorPage {
         display: flex;
-        justify-content: center;
-        align-items: center;
       }
 
-      .hinkFrame {
-        position: fixed;
-        z-index: 9999;
-        font-family: sans-serif;
-        font-size: 40px;
-        font-weight: bold;
-        color: #fff;
-        text-align: center !important;
+      #rightSide {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
       }
 
       #basicCalculatorMainTitle {
@@ -36,6 +24,7 @@
         text-shadow: 0 0 1px #3653b3;
         font-size: 60px;
         text-align: center;
+        margin: 20px 0;
       }
 
       .answer {
@@ -80,6 +69,14 @@
         /* margin: 0px; */
         width: 100%;
         transition: height 1s;
+      }
+
+      #styleCursor {
+        width: 4px;
+        height: 50px;
+        border-radius: 2px;
+        background-color: #4bff9c;
+        display: none;
       }
 
       .inputIndex {
@@ -138,18 +135,76 @@
   </head>
 
   <body>
-    <h1 id="basicCalculatorMainTitle">Basic Calculator</h1>
-    <div id="basicCalculator">
-      <div class="inputFrame">
-        <div class="inputIndex">1</div>
-        <div class="inputDetails">
-          <div class="input" contenteditable="true"></div>
+    <div id="settingFrame">
+      <div id="searchAndQuit">
+        <input
+          type="text"
+          id="searchForSetting"
+          placeholder="Search for setting"
+        />
+        <img
+          src="./pic/quit.svg"
+          width="50px"
+          height="50px"
+          alt="quit"
+          id="settingQuit"
+        />
+      </div>
+
+      <ul id="settingList">
+        <ul class="subList">
+          <li class="theme">Calculate</li>
+          <!-- <li class="listContent">hello</li> -->
+          <div class="settingChoice listContent">
+            <span>angle system or arc system</span>
+            <div class="choiceOption abrazineGlassStyle" id="angle-or-arc">
+              <div class="choiceShadow"></div>
+              <div class="choice" id="angleChoice">angle</div>
+              <div class="lastChoice" id="arcChoice">arc</div>
+            </div>
+          </div>
+        </ul>
+        <ul class="subList">
+          <li class="theme">Other</li>
+          <li class="listContent">content</li>
+        </ul>
+      </ul>
+    </div>
+
+    <div id="basicCalculatorPage">
+      <nav id="sidebar">
+        <ul id="siderPicList">
+          <!-- <li>?</li> -->
+          <li><img src="pic\home.svg" /></li>
+          <li><img src="pic/setting.svg" /></li>
+          <li><img src="pic/about.svg" /></li>
+          <li>@</li>
+        </ul>
+        <ul id="siderList">
+          <li id="home">Home</li>
+          <li id="setting">setting</li>
+          <li id="about">about</li>
+          <li>others</li>
+        </ul>
+      </nav>
+      <div id="rightSide">
+        <h1 id="basicCalculatorMainTitle">Basic Calculator</h1>
+        <div id="basicCalculator">
+          <div class="inputFrame">
+            <div class="inputIndex">1</div>
+            <div class="inputDetails">
+              <div class="input" contenteditable="true"></div>
+            </div>
+          </div>
+          <!-- <div id="styleCursor"></div> -->
         </div>
       </div>
     </div>
 
+    <script src="./src/basicCalculator/setting.js" type="module"></script>
     <script src="./src/basicCalculator/hinkFrame.js" type="module"></script>
     <script src="./src/basicCalculator/colerInput.js" type="module"></script>
     <script src="./src/basicCalculator/InputEvent.js" type="module"></script>
+    <script src="./src/basicCalculator/sideBarEvent.js" type="module"></script>
   </body>
 </html>

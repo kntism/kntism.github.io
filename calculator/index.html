@@ -20,11 +20,11 @@
         font-size: 40px;
         color: #3653b3;
         font-weight: bold;
+        transition: font-size 0.3s ease;
       }
 
-      .mainButton:hover {
+      #buttonToCal:hover {
         font-size: 50px !important;
-        transition: font-size 0.3s ease;
       }
     </style>
     <title>Cal</title>
@@ -33,14 +33,7 @@
     <main>
       <h1 class="mainTitle">Hello<br />This is a calculator</h1>
       <div class="centerContainer">
-        <!-- <button
-          id="buttonToCal"
-          type="button"
-          onclick="window.location.href='./basic-calculator.html'"
-        >
-          TO THE CALCULATOR
-        </button> -->
-        <p id="buttonToCal" class="mainButton">TO THE CALCULATOR</p>
+        <p id="buttonToCal">TO THE CALCULATOR</p>
       </div>
     </main>
     <script type="module">

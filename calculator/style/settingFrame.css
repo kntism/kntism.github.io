@@ -1,0 +1,73 @@
+#settingFrame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  /* width: 900px; */
+  width: 0px;
+  height: 700px;
+  background-color: #4d4d4d;
+  border-radius: 20px;
+  box-shadow: 4px 4px 8px #000;
+  /* display: none; */
+  position: fixed;
+  z-index: 10;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+
+#searchAndQuit {
+  display: flex;
+  align-items: center;
+}
+
+#searchForSetting {
+  min-width: 700px;
+  flex-grow: 1;
+  height: 50px;
+  border-radius: 20px;
+  border: 3px solid #313131;
+  background-color: #4d4d4d;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 5px;
+  margin: 10px;
+}
+
+#settingQuit {
+  padding: 0;
+  margin: 0;
+  border-radius: 30%;
+  transition: background-color 0.2s ease;
+}
+
+#settingQuit:hover {
+  background-color: #7e7e7e;
+}
+
+#settingList {
+  list-style: none;
+  padding: 0;
+  margin: 10px;
+  align-self: flex-start;
+}
+
+#settingList .theme {
+  font-size: 45px;
+  font-weight: bold;
+  color: #3658b4;
+}
+
+#settingList .subList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#settingList .listContent {
+  margin: 0 30px;
+  font-size: 25px;
+  color: #ffffff;
+}

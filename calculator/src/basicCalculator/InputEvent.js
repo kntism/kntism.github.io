@@ -21,6 +21,11 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
   //
   const inputFrames = document.getElementsByClassName("inputFrame");
   const inputElements = document.getElementsByClassName("input");
+  if (event.key !== "Enter" && event.key !== "Delete") {
+    if (container.querySelector("p.answer")) {
+      container.removeChild(container.querySelector("p.answer"));
+    }
+  }
 
   if (event.key === "=") {
     if (container.querySelector("p.answer")) {

@@ -8,3 +8,28 @@ body {
   display: flex;
   justify-content: center;
 }
+
+.abrazineGlassStyle {
+  min-width: 150px;
+  min-height: 30px;
+  background: transparent;
+  outline: none;
+  border: none;
+  /* background-color: #ffffff11; */
+  border-radius: 15px;
+  backdrop-filter: blur(2px);
+  box-shadow: 1px 1px 7px #ddd inset, 2px 2px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hinkFrame {
+  position: fixed;
+  z-index: 9999;
+  font-family: sans-serif;
+  font-size: 40px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center !important;
+}
