@@ -30,6 +30,14 @@
   margin: 0;
 }
 
+.choiceOption .choice:hover {
+  font-weight: 700;
+}
+
+.choiceOption .lastChoice:hover {
+  font-weight: 700;
+}
+
 .choiceOption .choiceShadow {
   position: absolute;
   padding: 3px;

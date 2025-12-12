@@ -1,4 +1,4 @@
-import { canUseFunc } from "../mainInformation.js";
+import { canUseFuncNames } from "../mainInformation.js";
 const inputElements = document.getElementsByClassName("input");
 // const inputElement = document.getElementById("input");
 
@@ -18,7 +18,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   const inputValue = inputElement.textContent || "";
   // const inputText = inputValue.replace(/\n/, "").match(/([a - zA - Z] +| [^ a - zA - Z] +) / g) || [];
   const inputText = inputValue.match(/([a-zA-Z]+|[^a-zA-Z]+)/g) || [];
-  console.log(`START!!! tokens: ${inputText}`);
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
   // 获取全局光标偏移量（核心修复）value
@@ -32,7 +31,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   // 替换原 cursorOffset 获取逻辑
   const cursorOffset = getGlobalCursorOffset(inputElement, range);
   // const cursorOffset = range.startOffset;
-  console.log(cursorOffset);
 
   let tokenLength = 0;
   let cursorTokenOrder = 0;
@@ -41,18 +39,11 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     tokenLength += inputText[i].length;
     if (tokenLength >= cursorOffset) {
       cursorTokenOrder = i;
-      console.log(`inputText[i].length: ${inputText[i].length}`);
-      console.log(`i: ${i}`);
-      console.log(`tokenLength: ${tokenLength}`);
-      console.log(`cursorOffset: ${cursorOffset}`);
       surplus =
         tokenLength === cursorOffset
           ? inputText[i].length
           : inputText[i].length - (tokenLength - cursorOffset);
       // surplus = inputText[i].length - (tokenLength - cursorOffset);
-      console.log(
-        `surplus: ${inputText[i].length} - (${tokenLength} - ${cursorOffset})`
-      );
       break;
     }
   }
@@ -61,7 +52,7 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   inputElement.innerHTML = "";
   for (let token of inputText) {
     const span = document.createElement("span");
-    if (canUseFunc.includes(token)) span.classList.add("can-use-func");
+    if (canUseFuncNames.includes(token)) span.classList.add("can-use-func");
     span.textContent = token;
     inputElement.appendChild(span);
   }

@@ -1,9 +1,9 @@
-import { canUseSign, canUseFunc } from "../mainInformation.js";
+import { canUseFuncNames } from "../mainInformation.js";
 
 const canUseFuncLength = [];
 
-for (let i = 0; i < canUseFunc.length; i++) {
-  canUseFuncLength.push(canUseFunc[i].length);
+for (let i = 0; i < canUseFuncNames.length; i++) {
+  canUseFuncLength.push(canUseFuncNames[i].length);
 }
 const maxCanUseFuncLength = Math.max(...canUseFuncLength);
 
@@ -42,7 +42,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   //newValue
   const inputValue = inputElement.textContent || "";
   const inputText = inputValue.match(/([a-zA-Z]+|[^a-zA-Z]+)/g) || [];
-  console.log(`tokens: ${inputText}`);
   // const startOffset = inputElement.selectionStart;
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
@@ -56,7 +55,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
 
   // 替换原 cursorOffset 获取逻辑
   const startOffset = getGlobalCursorOffset(inputElement, range);
-  console.log(`HINK!!! ${startOffset}`);
 
   let tokenLength = 0;
   let cursorToken = "";
@@ -71,15 +69,15 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   //hint
   hintFrame.textContent = "";
   hintFrame.style.display = "none";
-  console.log("The input is " + inputElement.textContent);
   if (newValue.length <= maxCanUseFuncLength && newValue.length !== 0) {
-    for (let i = 0; i < canUseFunc.length; i++) {
-      if (canUseFunc[i].slice(0, newValue.length) === newValue) {
+    for (let i = 0; i < canUseFuncNames.length; i++) {
+      if (canUseFuncNames[i].slice(0, newValue.length) === newValue) {
         hintFrame.style.left = `${cursorLeft}px`;
         hintFrame.style.top = `${cursorTop + 50}px`;
         hintFrame.style.display = "block";
         hintFrame.innerHTML +=
-          `<p style="line-height: 0">${canUseFunc[i]}<p>` + "<hr id='hinkHr'/>";
+          `<p style="line-height: 0">${canUseFuncNames[i]}<p>` +
+          "<hr id='hinkHr'/>";
       }
     }
     if (hintFrame.lastChild) {

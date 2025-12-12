@@ -6,14 +6,12 @@ const settingFrame = document.getElementById("settingFrame");
 
 function showSetting() {
   // settingFrame.style.display = "block";
-  settingFrame.style.width = "900px";
-  settingFrame.style.backgroundColor = "#4d4d4d";
+  settingFrame.style.visibility = "visible";
 }
 
 function hideSetting() {
   // settingFrame.style.display = "none";
-  settingFrame.style.width = "0";
-  settingFrame.style.backgroundColor = "#8ca0d4";
+  settingFrame.style.visibility = "hidden";
 }
 
 homeButton.addEventListener("click", function () {

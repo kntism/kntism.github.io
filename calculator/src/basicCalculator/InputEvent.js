@@ -17,32 +17,26 @@ function showResult(actualInputElement, container) {
     container.removeChild(container.querySelector("p.answer"));
     // inputElement.appendChild(answerElement);
   }
-  console.log(`cal!!! ${container.childNodes}`);
-  if (actualInputElement.textContent === "") {
-    alert("There is no equation to calculate");
-  } else {
-    const result = calculate(actualInputElement.textContent);
-    console.log(`----text content: ${actualInputElement.textContent}`);
-    const answerElement = document.createElement("p");
-    answerElement.className = "answer";
-    container.appendChild(answerElement);
-    const resultContent = ` ${result}`;
-    // answerElement.textContent = resultContent;
-    let i = 0; // 声明并初始化计数器
-    const typingInterval = setInterval(function () {
-      if (i < resultContent.length) {
-        if (answerElement.parentNode) {
-          // 确保元素还存在
-          answerElement.textContent += resultContent[i];
-          i++;
-        } else {
-          clearInterval(typingInterval); // 元素被删除时清除定时器
-        }
+  const result = calculate(actualInputElement.textContent);
+  const answerElement = document.createElement("p");
+  answerElement.className = "answer";
+  container.appendChild(answerElement);
+  const resultContent = ` ${result}`;
+  // answerElement.textContent = resultContent;
+  let i = 0; // 声明并初始化计数器
+  const typingInterval = setInterval(function () {
+    if (i < resultContent.length) {
+      if (answerElement.parentNode) {
+        // 确保元素还存在
+        answerElement.textContent += resultContent[i];
+        i++;
       } else {
-        clearInterval(typingInterval);
+        clearInterval(typingInterval); // 元素被删除时清除定时器
       }
-    }, 40);
-  }
+    } else {
+      clearInterval(typingInterval);
+    }
+  }, 40);
 }
 
 basicCalculatorContainer.addEventListener("keydown", function (event) {

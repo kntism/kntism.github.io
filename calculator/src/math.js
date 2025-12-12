@@ -1,33 +1,16 @@
-import { settings, canUseUnit } from "./mainInformation.js";
+import {
+  settings,
+  canUseUnit,
+  canUseFunc,
+  canUseFuncNames,
+  canUseSigns,
+} from "./mainInformation.js";
 export function calculate(expr) {
   try {
     //const tokens = expr.replace(/\s+/g, "").match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/)/g) || [];
     const tokens = expr.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\))/g) || [];
-
-    if (settings.degreeOrRad.degree) {
-      for (let i = 0; i < tokens.length; i++) {
-        if (canUseUnit.includes(tokens[i])) {
-          if (isNaN(+tokens[i - 1]))
-            throw new Error(`There is no number before "deg"`);
-          if (tokens[i] === "rad") {
-            throw new Error(`You can't use "rad" in degree mode`);
-          } else if (tokens[i] === "deg") {
-            tokens.splice(i - 1, 2, (+tokens[i - 1] * Math.PI) / 180);
-          }
-        }
-      }
-    } else if (settings.degreeOrRad.rad) {
-      for (let i = 0; i < tokens.length; i++) {
-        if (canUseUnit.includes(tokens[i])) {
-          if (isNaN(+tokens[i - 1]))
-            throw new Error(`There is no number before "rad"`);
-          if (tokens[i] === "deg") {
-            throw new Error(`You can't use "deg" in rad mode`);
-          } else if (tokens[i] === "rad") {
-            tokens.splice(i, i);
-          }
-        }
-      }
+    if (tokens.length === 0) {
+      throw new Error("There is no expression");
     }
     const cal = (tokenExpr) => {
       let i = 0;
@@ -49,61 +32,53 @@ export function calculate(expr) {
       i = tokenExpr.length - 1;
       while (i >= 0) {
         if (/[a-zA-Z]+/.test(tokenExpr[i])) {
+          if (canUseUnit.includes(tokenExpr[i])) {
+            i--;
+            continue;
+          }
+          if (!canUseFunc.hasOwnProperty(tokenExpr[i])) {
+            throw new Error("There are unknown functions");
+          }
           if (isNaN(+tokenExpr[i + 1])) {
             throw new Error("There is no number behind the function");
           }
-          switch (tokenExpr[i]) {
-            case "sin":
-              if (isNaN(tokenExpr[i - 1])) {
-                const funcResult = Math.sin(+tokenExpr[i + 1]);
-                tokenExpr.splice(i, 2, funcResult);
-                i--;
-              } else {
-                const funcResult =
-                  +tokenExpr[i - 1] * Math.sin(+tokenExpr[i + 1]);
-                tokenExpr.splice(i - 1, 3, funcResult);
-                i -= 2;
+          if (isNaN(tokenExpr[i - 1])) {
+            //函数后面一定是数字
+            let value = [];
+            for (
+              let m = i + 1;
+              !canUseSigns.includes(tokenExpr[m]) && m < tokenExpr.length;
+              m++
+            ) {
+              value.push(tokenExpr[m]);
+            }
+            console.log("-------" + value);
+            for (let i = 0; i < value.length; i++) {
+              if (isNaN(+value[i])) {
+                value.splice(i, 1);
               }
-              break;
-            case "cos":
-              if (isNaN(tokenExpr[i - 1])) {
-                const funcResult = Math.cos(+tokenExpr[i + 1]);
-                tokenExpr.splice(i, 2, funcResult);
-                i--;
-              } else {
-                const funcResult =
-                  +tokenExpr[i - 1] * Math.cos(+tokenExpr[i + 1]);
-                tokenExpr.splice(i - 1, 3, funcResult);
-                i -= 2;
-              }
-              break;
-            case "tan":
-              if (isNaN(tokenExpr[i - 1])) {
-                const funcResult = Math.tan(+tokenExpr[i + 1]);
-                tokenExpr.splice(i, 2, funcResult);
-                i--;
-              } else {
-                const funcResult =
-                  +tokenExpr[i - 1] * Math.tan(+tokenExpr[i + 1]);
-                tokenExpr.splice(i - 1, 3, funcResult);
-                i -= 2;
-              }
-              break;
-            case "cot":
-              if (isNaN(tokenExpr[i - 1])) {
-                const funcResult = 1 / Math.tan(+tokenExpr[i + 1]);
-                tokenExpr.splice(i, 2, funcResult);
-                i--;
-              } else {
-                const funcResult =
-                  +tokenExpr[i - 1] * (1 / Math.tan(+tokenExpr[i + 1]));
-                tokenExpr.splice(i - 1, 3, funcResult);
-                i -= 2;
-              }
-              break;
-            default:
-              throw new Error("There are unknown functions");
-              break;
+            }
+            if (canUseFunc[tokenExpr[i]].unit.length !== value.length) {
+              throw new Error(
+                `There should be ${
+                  canUseFunc[tokenExpr[i]].unit.length
+                } number after the function ${tokenExpr[i]}, but there are ${
+                  value.length
+                }`
+              );
+            }
+            if (value.length === 1) {
+              value = value[0];
+            }
+            const funcResult = canUseFunc[tokenExpr[i]].func(value);
+            tokenExpr.splice(i, value.length + 1, funcResult);
+            i--;
+          } else {
+            const value = +tokenExpr[i + 1];
+            const funcResult =
+              +tokenExpr[i - 1] * canUseFunc[tokenExpr[i]].func(value);
+            tokenExpr.splice(i - 1, 3, funcResult);
+            i -= 2;
           }
         } else i--;
       }
@@ -142,8 +117,13 @@ export function calculate(expr) {
         } else i++;
       }
 
-      return String(tokenExpr);
+      return tokenExpr.length === 1 ? String(tokenExpr) : tokenExpr;
     };
+    const leftBracket = expr.match(/\(/g) || [];
+    const rightBracket = expr.match(/\)/g) || [];
+    if (leftBracket.length !== rightBracket.length) {
+      throw new Error("Your brackets quantity is not equal");
+    }
     let i = tokens.length - 1;
     while (i >= 0) {
       if (tokens[i] !== "(") {
@@ -157,9 +137,26 @@ export function calculate(expr) {
         if (n === i + 1) {
           throw new Error("You can't use empty brackets");
         }
-        const subExpr = tokens.slice(i + 1, n);
-        tokens.splice(i, n - i + 1, cal(subExpr));
-        i--;
+        if (!isNaN(+tokens[i - 1]) || !isNaN(+tokens[n + 1])) {
+          if (!isNaN(+tokens[i - 1])) {
+            tokens.splice(i, 0, "*");
+            i++;
+            n++;
+          }
+          if (!isNaN(+tokens[n + 1])) {
+            tokens.splice(n + 1, 0, "*");
+          }
+          const subExpr = tokens.slice(i + 1, n);
+          tokens.splice(i, n - i + 1, ...cal(subExpr));
+          i--;
+          console.log(tokens);
+          continue;
+        } else {
+          const subExpr = tokens.slice(i + 1, n);
+          tokens.splice(i, n - i + 1, ...cal(subExpr));
+          i--;
+          continue;
+        }
       }
     }
     return cal(tokens);
