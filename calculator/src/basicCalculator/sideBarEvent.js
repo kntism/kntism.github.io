@@ -15,7 +15,7 @@ function hideSetting() {
 }
 
 homeButton.addEventListener("click", function () {
-  window.location.href = "../index.html";
+  window.location.href = "/index.html";
 });
 
 settingButton.addEventListener("click", function () {
