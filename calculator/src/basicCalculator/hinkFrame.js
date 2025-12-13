@@ -8,6 +8,7 @@ for (let i = 0; i < canUseFuncNames.length; i++) {
 const maxCanUseFuncLength = Math.max(...canUseFuncLength);
 
 const basicCalculatorContainer = document.getElementById("basicCalculator");
+let lastContent = "";
 basicCalculatorContainer.addEventListener("input", function (event) {
   const inputElement = event.target;
   // let hintFrame = inputElement.nextElementSibling;
@@ -58,10 +59,13 @@ basicCalculatorContainer.addEventListener("input", function (event) {
 
   let tokenLength = 0;
   let cursorToken = "";
+  let index;
   for (let i = 0; i < inputText.length; i++) {
     tokenLength += inputText[i].length;
     if (tokenLength >= startOffset) {
       cursorToken = inputText[i];
+      index = i;
+      console.log(`cursorToken: ${cursorToken} index: ${index}`);
       break;
     }
   }
@@ -84,4 +88,27 @@ basicCalculatorContainer.addEventListener("input", function (event) {
       hintFrame.removeChild(hintFrame.lastChild);
     }
   }
+
+  if (
+    canUseFuncNames.includes(cursorToken) &&
+    index !== undefined &&
+    inputElement.textContent.length > lastContent.length
+  ) {
+    const brackets = document.createElement("span");
+    brackets.textContent = "()";
+    inputElement.insertBefore(brackets, inputElement.childNodes[index + 1]);
+
+    // 设置光标位置到括号内
+    const range = document.createRange();
+    const selection = window.getSelection();
+
+    // 将光标定位在 "(" 后面（即括号内开始位置）
+    range.setStart(brackets.firstChild, 1); // 定位到 "(" 后，也就是 ")" 前
+    range.collapse(true); // 折叠范围到起点
+
+    // 清除现有选择并添加新范围
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+  lastContent = inputElement.textContent;
 });
