@@ -1,0 +1,54 @@
+{
+  "sites": [
+    {
+      "id": 1,
+      "slug": "alternative-to",
+      "toolName": "AlternativeTo",
+      "toolUrl": "https://alternativeto.net/",
+      "emoji": "🔍",
+      "updatedDate": "2025-01-20",
+      "description": "Alternative Software Recommendations",
+      "chineseDescription": "替代软件推荐平台"
+    },
+    {
+      "id": 2,
+      "slug": "gutenberg",
+      "toolName": "Gutenberg",
+      "toolUrl": "https://www.gutenberg.org/",
+      "emoji": "📚",
+      "updatedDate": "2025-01-20",
+      "description": "Free Books",
+      "chineseDescription": "免费电子书库"
+    },
+    {
+      "id": 3,
+      "slug": "100font",
+      "toolName": "100font",
+      "toolUrl": "https://www.100font.com/",
+      "emoji": "✍️",
+      "updatedDate": "2025-01-20",
+      "description": "Free and Open Source Fonts",
+      "chineseDescription": "免费开源字体"
+    },
+    {
+      "id": 4,
+      "slug": "prism-break",
+      "toolName": "PRISM Break",
+      "toolUrl": "https://prism-break.org/",
+      "emoji": "⚡️",
+      "updatedDate": "2025-01-20",
+      "description": "Privacy Tools",
+      "chineseDescription": "隐私保护工具"
+    },
+    {
+      "id": 5,
+      "slug": "stable-diffusion-cheat-sheet",
+      "toolName": "StableDiffusion-CheatSheet",
+      "toolUrl": "/StableDiffusion-CheatSheet/index.html",
+      "emoji": "🎨",
+      "updatedDate": "2024-03-30",
+      "description": "SD artistical style cheat sheet",
+      "chineseDescription": "Stable Diffusion 艺术风格速查表"
+    }
+  ]
+}

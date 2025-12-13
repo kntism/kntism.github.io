@@ -4,11 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tools | Lu Ling</title>
-    <script type="module" crossorigin src="/assets/index-JWmC3bAV.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BEnbATFZ.css">
+    <title>Website favorites | Lu Ling</title>
+    <link rel="stylesheet" href="/style/main.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <div class="app-container">
+      <div class="main-content">
+        <h1 class="page-title">{ Favorites }</h1>
+
+        <div id="sites-container" class="site-list">
+          <!-- 网站数据将通过 JavaScript 动态加载 -->
+          <div class="loading-message">Loading...</div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
