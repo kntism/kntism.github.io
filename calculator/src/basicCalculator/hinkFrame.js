@@ -42,7 +42,7 @@ basicCalculatorContainer.addEventListener("input", function (event) {
 
   //newValue
   const inputValue = inputElement.textContent || "";
-  const inputText = inputValue.match(/([a-zA-Z]+|[^a-zA-Z]+)/g) || [];
+  const inputText = inputValue.match(/([a-zA-Z]+|[^a-zA-Z()]+|\(|\))/g) || [];
   // const startOffset = inputElement.selectionStart;
   const selection = window.getSelection();
   const range = selection.getRangeAt(0);
@@ -65,7 +65,6 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     if (tokenLength >= startOffset) {
       cursorToken = inputText[i];
       index = i;
-      console.log(`cursorToken: ${cursorToken} index: ${index}`);
       break;
     }
   }
@@ -90,12 +89,12 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   }
 
   if (
-    canUseFuncNames.includes(cursorToken) &&
+    cursorToken === "(" &&
     index !== undefined &&
     inputElement.textContent.length > lastContent.length
   ) {
     const brackets = document.createElement("span");
-    brackets.textContent = "()";
+    brackets.textContent = ")";
     inputElement.insertBefore(brackets, inputElement.childNodes[index + 1]);
 
     // 设置光标位置到括号内

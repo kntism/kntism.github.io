@@ -4,101 +4,123 @@ const normalOneValueChack = function (value) {
 
 const canUseFunc = {
   sin: {
-    func: Math.sin,
+    func: function (radians) {
+      return Math.sin(radians[0]);
+    },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   cos: {
-    func: Math.cos,
+    func: function (radians) {
+      return Math.cos(radians[0]);
+    },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   tan: {
-    func: Math.tan,
+    func: function (radians) {
+      return Math.tan(radians[0]);
+    },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   cot: {
     func: function (radians) {
-      return 1 / Math.tan(radians);
+      return 1 / Math.tan(radians[0]);
     },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   log: {
-    func: Math.log10,
+    func: function (value) {
+      return Math.log10(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   ln: {
-    func: Math.log,
+    func: function (value) {
+      return Math.log(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   sqrt: {
-    func: Math.sqrt,
+    func: function (value) {
+      return Math.sqrt(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   abs: {
-    func: Math.abs,
+    func: function (value) {
+      return Math.abs(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   floor: {
-    func: Math.floor,
+    func: function (value) {
+      return Math.floor(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   ceil: {
-    func: Math.ceil,
+    func: function (value) {
+      return Math.ceil(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   round: {
-    func: Math.round,
+    func: function (value) {
+      return Math.round(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   exp: {
-    func: Math.exp,
+    func: function (value) {
+      return Math.exp(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   pow: {
@@ -108,72 +130,97 @@ const canUseFunc = {
     unit: [["#"], ["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: function (value) {
+      checkValueAmount: function (value) {
         return value.length === 2 ? true : false;
       },
     },
   },
   sinh: {
-    func: Math.sinh,
+    func: function (value) {
+      return Math.sinh(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   cosh: {
-    func: Math.cosh,
+    func: function (value) {
+      return Math.cosh(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   tanh: {
-    func: Math.tanh,
+    func: function (value) {
+      return Math.tanh(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   asin: {
-    func: Math.asin,
+    func: function (value) {
+      return Math.asin(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   acos: {
-    func: Math.acos,
+    func: function (value) {
+      return Math.acos(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   atan: {
-    func: Math.atan,
+    func: function (value) {
+      return Math.atan(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
   asinh: {
-    func: Math.asinh,
+    func: function (value) {
+      return Math.asinh(value[0]);
+    },
     unit: [["#"]],
     toolFunc: {
       unitTransition: function (value) {},
-      chackValueAmount: normalOneValueChack,
+      checkValueAmount: normalOneValueChack,
     },
   },
 };
 
+const constantQuantity = {
+  Pi: { value: Math.PI },
+  e: { value: Math.E },
+  Infinity: { value: Infinity },
+};
+
+const canUseQuantityNames = Object.keys(constantQuantity);
+
 const canUseFuncNames = Object.keys(canUseFunc);
 
 const canUseSigns = ["+", "-", "*", "/", "(", ")"];
+
+const allCanUseSigns = canUseSigns;
+allCanUseSigns.push(",");
 
 const canUseUnit = ["deg", "rad"];
 
@@ -182,4 +229,13 @@ const settings = {
   language: { en: true, zh: false },
 };
 
-export { canUseFunc, canUseSigns, settings, canUseUnit, canUseFuncNames };
+export {
+  canUseFunc,
+  canUseSigns,
+  allCanUseSigns,
+  settings,
+  canUseUnit,
+  canUseFuncNames,
+  constantQuantity,
+  canUseQuantityNames,
+};
