@@ -217,10 +217,11 @@ const canUseQuantityNames = Object.keys(constantQuantity);
 
 const canUseFuncNames = Object.keys(canUseFunc);
 
-const canUseSigns = ["+", "-", "*", "/", "(", ")"];
+const canUseSigns = ["+", "-", "*", "/", "^", "(", ")"];
 
-const allCanUseSigns = canUseSigns;
-allCanUseSigns.push(",");
+const allCanUseSigns = ["+", "-", "*", "/", "^", "(", ")", ","];
+
+const allOperators = ["+", "-", "*", "/", "^"];
 
 const canUseUnit = ["deg", "rad"];
 
@@ -233,6 +234,7 @@ export {
   canUseFunc,
   canUseSigns,
   allCanUseSigns,
+  allOperators,
   settings,
   canUseUnit,
   canUseFuncNames,
