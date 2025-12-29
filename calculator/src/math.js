@@ -11,6 +11,34 @@ import {
 } from "./mainInformation.js";
 export function calculate(expr) {
   try {
+    const addOrSubFunc = (numList) => {
+      formatting(numList);
+      for (let i = 0; i < numList.length; i++) {
+        if (numList[i] === "+" || numList[i] === "-") {
+          const a = +numList[i - 1],
+            b = +numList[i + 1];
+          if (isNaN(a) || isNaN(b)) {
+            if (
+              allOperators.includes(numList[i + 1]) ||
+              allOperators.includes(numList[i - 1]) ||
+              !numList[i - 1] ||
+              !numList[i + 1]
+            ) {
+              throw new Error(
+                "There is no can use object before or after '+' or '-'" +
+                  "numList: " +
+                  numList
+              );
+            }
+          }
+          numList.splice(i - 1, 3, numList[i] === "+" ? a + b : a - b);
+          i--;
+          continue;
+        }
+      }
+      return numList;
+    };
+
     const conversionOfScientificNotation = (result) => {
       let tokenResult = result;
       if (!Array.isArray(tokenResult)) {
@@ -145,13 +173,51 @@ export function calculate(expr) {
       const finalResult = `${numResult}${othersList.join("")}`;
       return {
         result: finalResult,
-        // totalLength: numList.length + othersList.length,
         totalLength: 1,
       };
     };
 
     const evalSubExprAddAndSub = (subExpr) => {
       let tokens = [...subExpr];
+      for (let i = 0; i < tokens.length; i++) {
+        tokens.splice(
+          i,
+          1,
+          ...(tokens[i].match(
+            /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+          ) || [])
+        );
+      }
+      let i = 0;
+      while (i < tokens.length) {
+        if (tokens[i] === "*" || tokens[i] === "/") {
+          let subExpr = [tokens[i]];
+          let j = i + 1;
+          let spliceStart = i;
+          if (tokens[i - 1]) {
+            subExpr.unshift(tokens[i - 1]);
+            spliceStart--;
+          }
+          if (tokens[i + 1]) {
+            subExpr.push(tokens[i + 1]);
+            j++;
+          }
+          const signsInsteatOfMulAndDiv = allCanUseSigns.filter(
+            (sign) => sign !== "*" && sign !== "/"
+          );
+          while (
+            !signsInsteatOfMulAndDiv.includes(tokens[j]) &&
+            j < tokens.length &&
+            tokens[j]
+          ) {
+            subExpr.push(tokens[j]);
+            j++;
+            continue;
+          }
+          tokens.splice(spliceStart, subExpr.length, subExpr.join(""));
+          continue;
+        } else i++;
+      }
       formatting(tokens);
       let numList = [];
       let othersList = [];
@@ -186,49 +252,129 @@ export function calculate(expr) {
       ) {
         othersList.unshift("+");
       }
-      for (let i = 0; i < numList.length; i++) {
-        if (numList[i] === "+" || numList[i] === "-") {
-          const a = +numList[i - 1],
-            b = +numList[i + 1];
-          if (isNaN(a) || isNaN(b)) {
-            if (
-              allOperators.includes(numList[i + 1]) ||
-              allOperators.includes(numList[i - 1]) ||
-              !numList[i - 1] ||
-              !numList[i + 1]
-            ) {
-              throw new Error(
-                "There is no can use object before or after '+' or '-'" +
-                  "numList: " +
-                  numList +
-                  "subExpr: " +
-                  subExpr
-              );
+      addOrSubFunc(numList);
+
+      let othersObj = {};
+      for (let i = othersList.length - 1; i >= 0; i--) {
+        if (othersList[i] !== "-" && othersList[i] !== "+" && othersList[i]) {
+          othersObj[`other${i}`] = {};
+          othersObj[`other${i}`]["sym"] = othersList[i - 1]
+            ? othersList[i - 1]
+            : "+";
+          let othersToken =
+            othersList[i].match(
+              /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+            ) || [];
+          let notVariateOrFunction = [...othersToken];
+          let variateOrFunction = [];
+          for (let j = othersToken.length - 1; j >= 0; j--) {
+            if (/^[a-zA-Z]+$/.test(othersToken[j]) && othersToken[j]) {
+              if (allOperators.includes(othersToken[j - 1])) {
+                variateOrFunction.unshift(othersToken[j]);
+                variateOrFunction.unshift(othersToken[j - 1]);
+                notVariateOrFunction.splice(j - 1, 2);
+              } else {
+                variateOrFunction.unshift(othersToken[j]);
+                variateOrFunction.unshift("*");
+                notVariateOrFunction.splice(j, 1);
+              }
+            } else {
+              break;
             }
           }
-          numList.splice(i - 1, 3, numList[i] === "+" ? a + b : a - b);
-          i--;
-          continue;
+          if (notVariateOrFunction.length > 0) {
+            othersObj[`other${i}`]["notVariateOrFunction"] =
+              notVariateOrFunction;
+          } else {
+            othersObj[`other${i}`]["notVariateOrFunction"] = ["1"];
+          }
+          othersObj[`other${i}`]["variateOrFunction"] = variateOrFunction;
+        }
+      }
+      console.log(`othersObj ${JSON.stringify(othersObj, null, 1)}`);
+      const allKeys = Object.keys(othersObj);
+      const sym = "sym";
+      const variateOrFunction = "variateOrFunction";
+      const notVariateOrFunction = "notVariateOrFunction";
+      let resultList = [];
+      for (let key in othersObj) {
+        const otherKeys = allKeys.filter((k) => k !== key);
+        // const otherKeys = [...allKeys];
+        // otherKeys.splice(allKeys.indexOf(key), 1);
+        let sameKeyList = [];
+        for (let i = 0; i < otherKeys.length; i++) {
+          if (
+            othersObj[otherKeys[i]] &&
+            othersObj[key] &&
+            othersObj[key][variateOrFunction] &&
+            othersObj[otherKeys[i]][variateOrFunction]
+          ) {
+            if (
+              JSON.stringify(othersObj[key][variateOrFunction]) ===
+              JSON.stringify(othersObj[otherKeys[i]][variateOrFunction])
+            ) {
+              sameKeyList.push(otherKeys[i]);
+            }
+          } else {
+            console.log(`没有该键`);
+          }
+        }
+        // if (sameKeyList.length === 0) {
+        //   sameKeyList.push(key);
+        // }
+        console.log(`sameKeyList: ${sameKeyList}`);
+        if (sameKeyList.length > 0) {
+          let _sameList = [];
+          for (let sameKey of sameKeyList) {
+            console.log(
+              `此次 key: ${sameKey} 此次 sym: ${othersObj[sameKey][sym]} 此次非变量或函数：${othersObj[sameKey][notVariateOrFunction]}`
+            );
+            _sameList.push(othersObj[sameKey][sym]);
+            _sameList.push(othersObj[sameKey][notVariateOrFunction]);
+          }
+
+          console.log(`_sameList: ${_sameList}`);
+
+          let simplifiedResult = `${addOrSubFunc([
+            othersObj[key][sym],
+            ...othersObj[key][notVariateOrFunction],
+            ..._sameList,
+          ])}${othersObj[key][variateOrFunction].join("")}`;
+
+          if (!allOperators.includes(simplifiedResult[0])) {
+            simplifiedResult = "+" + simplifiedResult;
+          }
+          resultList.unshift(simplifiedResult);
+          console.log(`有相同的项 resultList: ${resultList}`);
+          delete othersObj[key];
+          for (let key of sameKeyList) {
+            delete othersObj[key];
+          }
+        } else {
+          console.log(`没有相同的项`);
+          let simplifiedResult = `${othersObj[key][sym]}${othersObj[key][
+            notVariateOrFunction
+          ].join("")}${othersObj[key][variateOrFunction].join("")}`;
+          resultList.unshift(simplifiedResult);
+          console.log(`没有相同的项 resultList: ${resultList}`);
+          delete othersObj[key];
         }
       }
 
-      //将numList和othersList组合在一起
-      // let newTokens = [...numList, ...othersList];
+      // 在化简逻辑结束后，将 othersObj 中的剩余项重新构建到 othersList 中
+      // othersList = [];
+      othersList = [resultList.join("")];
+      console.log(
+        `将 othersObj 中的剩余项重新构建到 othersList 中 othersObj: ${JSON.stringify(
+          othersObj,
+          null,
+          1
+        )}`
+      );
 
-      // for (let i = 0; i < othersList.length; i++) {
-      //   othersList.splice(
-      //     i,
-      //     1,
-      //     ...(othersList[i].match(
-      //       /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-      //     ) || [])
-      //   );
-      // }
-      // formatting(othersList);
-      // let actualToken = [];
-      // for (let i = othersList.length - 1; i >= 0; i--) {
-      //   actualToken.unshift(othersList[i]);
-      // }
+      if (othersList[0][0] === "+" && numList.length === 0 && othersList) {
+        othersList[0] = othersList[0].slice(1);
+      }
 
       console.log("numList: " + numList);
       console.log("otherList: " + othersList);
@@ -237,12 +383,10 @@ export function calculate(expr) {
       console.log("finalResult: " + finalResult);
       return {
         result: finalResult,
-        // totalLength: numList.length + othersList.length,
         totalLength: 1,
       };
     };
 
-    //const tokens = expr.replace(/\s+/g, "").match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/)/g) || [];
     let tokens =
       expr.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
     if (tokens.length === 0) {
@@ -253,7 +397,7 @@ export function calculate(expr) {
     const cal = (tokenExpr) => {
       let i = tokenExpr.length - 1;
       while (i >= 0) {
-        if (/[a-zA-Z]+/.test(tokenExpr[i])) {
+        if (/^[a-zA-Z]+$/.test(tokenExpr[i])) {
           if (canUseUnit.includes(tokenExpr[i])) {
             i--;
             continue;
@@ -269,8 +413,6 @@ export function calculate(expr) {
             throw new Error("There is no number behind the function");
           }
           let value = [];
-          console.log("---------tokenExpr" + tokenExpr);
-          console.log("canUseSigns: " + canUseSigns);
           for (
             let m = i + 1;
             !canUseSigns.includes(tokenExpr[m]) &&
@@ -280,14 +422,12 @@ export function calculate(expr) {
           ) {
             value.push(tokenExpr[m]);
           }
-          console.log("---------111value: " + value);
           let valueLength = value.length;
           for (let m = 0; m < value.length; m++) {
             if (isNaN(+value[m])) {
               value.splice(m, 1);
             }
           }
-          console.log("---------value: " + value);
           if (
             canUseFunc[tokenExpr[i]].toolFunc.checkValueAmount(value) === false
           ) {
@@ -332,7 +472,6 @@ export function calculate(expr) {
       i = 0;
       while (i < tokenExpr.length) {
         if (tokenExpr[i] === "*" || tokenExpr[i] === "/") {
-          console.log("hello");
           let subExpr = [tokenExpr[i]];
           let j = i + 1;
           let spliceStart = i;
@@ -363,7 +502,6 @@ export function calculate(expr) {
           console.log(
             "乘法计算完毕resultObj.totalLength: " + resultObj.totalLength
           );
-          console.log("乘法计算完毕i: " + i);
         } else i++;
       }
 
@@ -403,7 +541,6 @@ export function calculate(expr) {
           // }
           const resultObj = evalSubExprAddAndSub(subExpr);
           tokenExpr.splice(spliceStart, subExpr.length, resultObj.result);
-          console.log(`----------tokens: ${tokenExpr}`);
           i += resultObj.totalLength - 1;
         } else i++;
       }
