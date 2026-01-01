@@ -4,8 +4,8 @@
   align-items: center;
   /* justify-content: center; */
   /* width: 900px; */
-  width: 900px;
-  height: 700px;
+  width: 70vw;
+  height: 70vh;
   background-color: #4d4d4d;
   visibility: hidden;
   /* background-color: #4d4d4d; */
@@ -23,10 +23,11 @@
 #searchAndQuit {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 #searchForSetting {
-  min-width: 700px;
+  min-width: 70px;
   flex-grow: 1;
   height: 50px;
   border-radius: 20px;

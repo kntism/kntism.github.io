@@ -180,6 +180,25 @@ export function calculate(expr) {
     const evalSubExprAddAndSub = (subExpr) => {
       let tokens = [...subExpr];
       for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "-") {
+          if (tokens[i + 1].includes("+") || tokens[i + 1].includes("-")) {
+            let sub =
+              tokens[i + 1].match(
+                /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+              ) || [];
+            formatting(sub);
+            for (let j = 0; j < sub.length; j++) {
+              if (sub[j] === "-") {
+                sub.splice(j, 1, "+");
+              } else if (sub[j] === "+") {
+                sub.splice(j, 1, "-");
+              }
+            }
+            tokens[i + 1] = sub.join("");
+          }
+        }
+      }
+      for (let i = 0; i < tokens.length; i++) {
         tokens.splice(
           i,
           1,
@@ -364,14 +383,6 @@ export function calculate(expr) {
       // 在化简逻辑结束后，将 othersObj 中的剩余项重新构建到 othersList 中
       // othersList = [];
       othersList = [resultList.join("")];
-      console.log(
-        `将 othersObj 中的剩余项重新构建到 othersList 中 othersObj: ${JSON.stringify(
-          othersObj,
-          null,
-          1
-        )}`
-      );
-
       if (othersList[0][0] === "+" && numList.length === 0 && othersList) {
         othersList[0] = othersList[0].slice(1);
       }

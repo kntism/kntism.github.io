@@ -1,5 +1,6 @@
 .settingChoice {
   display: flex;
+  flex-wrap: wrap; /* 添加换行支持 */
   min-width: 100px;
   min-height: 50px;
   font-size: 20px;
@@ -16,6 +17,7 @@
   margin: 0 15px;
   padding: 0 20px;
   color: #fff;
+  flex: 0 0 auto; /* 防止元素收缩，也可以设置具体宽度 */
 }
 
 .choiceOption .choice {
@@ -30,10 +32,7 @@
   margin: 0;
 }
 
-.choiceOption .choice:hover {
-  font-weight: 700;
-}
-
+.choiceOption .choice:hover,
 .choiceOption .lastChoice:hover {
   font-weight: 700;
 }

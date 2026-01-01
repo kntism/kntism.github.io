@@ -48,15 +48,6 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
   //
   const inputFrames = document.getElementsByClassName("inputFrame");
   const inputElements = document.getElementsByClassName("input");
-  // if (event.key !== "Enter" && event.key !== "Delete") {
-  //   if (container.querySelector("p.answer")) {
-  //     container.removeChild(container.querySelector("p.answer"));
-  //   }
-  // }
-
-  // if (event.key === "=") {
-  //   showResult(actualInputElement, container);
-  // }
 
   if (event.key === "Enter") {
     event.preventDefault();
@@ -94,7 +85,10 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
     // 聚焦到新创建的输入框
     focusOnDiv(input);
   }
-  if (event.key === "Delete") {
+  if (
+    event.key === "Delete" ||
+    (event.key === "Backspace" && actualInputElement.textContent.length === 0)
+  ) {
     event.preventDefault();
     if (inputFrames.length > 1) {
       const currentIndex = Array.prototype.indexOf.call(
