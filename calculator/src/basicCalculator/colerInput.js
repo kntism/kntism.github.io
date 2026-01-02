@@ -68,6 +68,7 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     selection.addRange(newRange);
   } else {
     newRange.setStart(inputElement, 0);
+    selection.addRange(newRange);
   }
   // 应用新的 Range（恢复光标）
 });

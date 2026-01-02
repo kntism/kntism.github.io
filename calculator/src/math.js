@@ -107,6 +107,10 @@ export function calculate(expr) {
           tokenExpr.splice(i, 0, "*");
           i++;
         }
+        if (!isNaN(tokenExpr[i + 1])) {
+          tokenExpr.splice(i + 1, 0, "*");
+          i++;
+        }
       }
       return tokenExpr;
     };

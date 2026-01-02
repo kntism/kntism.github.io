@@ -146,8 +146,8 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   const inputElement = event.target;
   const container = inputElement.parentElement;
   const currentValue = inputElement.textContent;
-  const i = currentValue.length - 2;
-  if (currentValue[i] === "=" && currentValue[i + 1] === "=") {
+  const i = currentValue.length - 1;
+  if (currentValue[i] === "=") {
     showResult(inputElement, container);
   } else {
     if (container.querySelector("p.answer")) {
