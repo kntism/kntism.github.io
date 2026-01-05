@@ -39,6 +39,144 @@ export function calculate(expr) {
       return numList;
     };
 
+    const mulOrDivFunc = (numList) => {
+      formatting(numList);
+      for (let i = 0; i < numList.length; i++) {
+        if (numList[i] === "*" || numList[i] === "/") {
+          const a = +numList[i - 1],
+            b = +numList[i + 1];
+          if (numList[i] === "/" && numList[i + 1] === "0") {
+            throw new Error("You can't divide by 0");
+          }
+          if (isNaN(a) || isNaN(b)) {
+            if (
+              allOperators.includes(numList[i + 1]) ||
+              allOperators.includes(numList[i - 1]) ||
+              !numList[i - 1] ||
+              !numList[i + 1]
+            ) {
+              throw new Error(
+                "There is no can use object before or after '*' or '/'"
+              );
+            }
+          }
+          numList.splice(i - 1, 3, numList[i] === "*" ? a * b : a / b);
+          i--;
+          continue;
+        }
+      }
+      return numList;
+    };
+
+    const combineMul = (tokens) => {
+      let i = 0;
+      while (i < tokens.length) {
+        if (tokens[i] === "*" || tokens[i] === "/") {
+          let subExpr = [tokens[i]];
+          let j = i + 1;
+          let spliceStart = i;
+          if (tokens[i - 1]) {
+            subExpr.unshift(tokens[i - 1]);
+            spliceStart--;
+          }
+          if (tokens[i + 1]) {
+            subExpr.push(tokens[i + 1]);
+            j++;
+          }
+          const signsInsteatOfMulAndDiv = allCanUseSigns.filter(
+            (sign) => sign !== "*" && sign !== "/"
+          );
+          while (
+            !signsInsteatOfMulAndDiv.includes(tokens[j]) &&
+            j < tokens.length &&
+            tokens[j]
+          ) {
+            subExpr.push(tokens[j]);
+            j++;
+            continue;
+          }
+          tokens.splice(spliceStart, subExpr.length, subExpr.join(""));
+          continue;
+        } else i++;
+      }
+    };
+
+    const polynomialMul = (allTokens) => {
+      for (let i = 0; i < allTokens.length; i++) {
+        if (allTokens[i].length === 0) {
+          allTokens.splice(i, 1);
+        }
+      }
+      if (allTokens.length === 0) {
+        return [];
+      }
+      if (allTokens.length === 1) {
+        return allTokens[0];
+      }
+      let allResult = [];
+      for (let i = 0; i < allTokens[0].length; i++) {
+        const firstSym = allTokens[0][i - 1] === "-" ? 0 : 1;
+        for (let j = 0; j < allTokens[1].length; j++) {
+          const secondSym = allTokens[1][j - 1] === "-" ? 0 : 1;
+          const togetherSym = firstSym === secondSym ? "+" : "-";
+          if (
+            allTokens[0][i] !== "+" &&
+            allTokens[0][i] !== "-" &&
+            allTokens[1][j] !== "+" &&
+            allTokens[1][j] !== "-"
+          ) {
+            if (!isNaN(allTokens[0][i]) && !isNaN(allTokens[1][j])) {
+              const result = mulOrDivFunc([
+                allTokens[0][i],
+                "*",
+                allTokens[1][j],
+              ]);
+              allResult.push(togetherSym);
+              allResult.push(...result);
+            } else {
+              let firstNum = allTokens[0][i];
+              let secondNum = allTokens[1][j];
+              let firstOther;
+              let secondOther;
+              if (isNaN(allTokens[0][i])) {
+                if (!isNaN(allTokens[0][i])) {
+                  firstNum = allTokens[0][i].slice(0, 1);
+                  firstOther = allTokens[0][i].slice(1);
+                } else {
+                  firstNum = 1;
+                  firstOther = allTokens[0][i];
+                }
+              }
+              if (isNaN(allTokens[1][j])) {
+                if (!isNaN(allTokens[1][j])) {
+                  secondNum = allTokens[1][j].slice(0, 1);
+                  secondOther = allTokens[1][j].slice(1);
+                } else {
+                  secondNum = 1;
+                  secondOther = allTokens[1][j];
+                }
+              }
+              let allOther = [firstOther, secondOther];
+              for (let i = 0; i < allOther.length; i++) {
+                if (!allOther[i]) {
+                  allOther.splice(i, 1);
+                }
+              }
+              console.log(allOther);
+              console.log(`firstNum: ${firstNum},  secondNum: ${secondNum}`);
+              const togetherNum = mulOrDivFunc([firstNum, "*", secondNum]);
+              allOther = allOther.join("*");
+              allOther = "*" + allOther;
+              const result = togetherNum.join("") + allOther;
+              allResult.push(togetherSym);
+              allResult.push(result);
+            }
+          }
+        }
+      }
+      return allResult;
+    };
+
     const conversionOfScientificNotation = (result) => {
       let tokenResult = result;
       if (!Array.isArray(tokenResult)) {
@@ -107,7 +245,10 @@ export function calculate(expr) {
           tokenExpr.splice(i, 0, "*");
           i++;
         }
-        if (!isNaN(tokenExpr[i + 1])) {
+        if (
+          !isNaN(tokenExpr[i + 1]) &&
+          !canUseFuncNames.includes(tokenExpr[i])
+        ) {
           tokenExpr.splice(i + 1, 0, "*");
           i++;
         }
@@ -149,32 +290,78 @@ export function calculate(expr) {
       ) {
         othersList.unshift("*");
       }
-      for (let i = 0; i < numList.length; i++) {
-        if (numList[i] === "*" || numList[i] === "/") {
-          const a = +numList[i - 1],
-            b = +numList[i + 1];
-          if (numList[i] === "/" && numList[i + 1] === "0") {
-            throw new Error("You can't divide by 0");
-          }
-          if (isNaN(a) || isNaN(b)) {
-            if (
-              allOperators.includes(numList[i + 1]) ||
-              allOperators.includes(numList[i - 1]) ||
-              !numList[i - 1] ||
-              !numList[i + 1]
-            ) {
-              throw new Error(
-                "There is no can use object before or after '*' or '/'"
-              );
-            }
-          }
-          numList.splice(i - 1, 3, numList[i] === "*" ? a * b : a / b);
-          i--;
-          continue;
+      console.log(`MULnumList: ${numList}`);
+      console.log(`MULothersList: ${othersList}`);
+      mulOrDivFunc(numList);
+      let othersObj = {};
+      for (let i = othersList.length - 1; i >= 0; i--) {
+        if (othersList[i] !== "*" && othersList[i] !== "/" && othersList[i]) {
+          othersObj[`other${i}`] = {};
+          othersObj[`other${i}`]["sym"] = othersList[i - 1]
+            ? othersList[i - 1]
+            : "*";
+          let othersToken =
+            othersList[i].match(
+              /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+            ) || [];
+          combineMul(othersToken);
+          console.log(`MULothersToken: ${othersToken}`);
+          othersObj[`other${i}`]["tokens"] = othersToken;
         }
       }
-      const numResult = numList.join("");
-      const finalResult = `${numResult}${othersList.join("")}`;
+      console.log(`MULothersObj: ${JSON.stringify(othersObj, null, 1)}`);
+      const allKeys = Object.keys(othersObj);
+      let resultList = [];
+      let divList = [];
+      let notDivList = [];
+      for (let i = 0; i < allKeys.length; i++) {
+        if (othersObj[allKeys[i]]["sym"] === "/") {
+          divList.push([...othersObj[allKeys[i]]["tokens"]]);
+          delete othersObj[allKeys[i]];
+        }
+      }
+      for (let key in othersObj) {
+        notDivList.push([...othersObj[key]["tokens"]]);
+      }
+      console.log(
+        `MUL-NEW-NEWothersObj: ${JSON.stringify(
+          othersObj,
+          null,
+          1
+        )}, DIVdivList: ${divList}, NOTDIVnotDivList: ${notDivList}`
+      );
+      for (let i = 0; i < divList.length; i++) {
+        if (divList[i] && divList[i + 1]) {
+          const result = polynomialMul([divList[i], divList[i + 1]]);
+          divList.splice(i, 2, result);
+          i--;
+        }
+      }
+      for (let i = 0; i < notDivList.length; i++) {
+        if (notDivList[i] && notDivList[i + 1]) {
+          const result = polynomialMul([notDivList[i], notDivList[i + 1]]);
+          notDivList.splice(i, 2, result);
+          i--;
+        }
+      }
+      // const divResult = [...divList];
+      // const notDivResult = [...notDivList];
+      console.log(`MULdivResult: ${divList}, MULnotDivResult: ${notDivList}`);
+      console.log(`MULnumList: ${numList}, MULnotDivResult: ${notDivList}`);
+      let finalResult = polynomialMul([[...numList], notDivList[0]]);
+      if (divList.length !== 0) {
+        finalResult.push("/");
+        finalResult.push(...divList);
+      }
+      finalResult = finalResult.join("");
+      finalResult = finalResult.match(/\-|\+|[^-+]+/g);
+
+      // if (numList.length !== 0) {
+      //   finalResult = polynomialMul([[...numList], notDivList[0]]);
+      // } else {
+      //   finalResult = notDivList[0];
+      // }
+      console.log(`MULfinalResult: ${finalResult}`);
       return {
         result: finalResult,
         totalLength: 1,
@@ -211,36 +398,7 @@ export function calculate(expr) {
           ) || [])
         );
       }
-      let i = 0;
-      while (i < tokens.length) {
-        if (tokens[i] === "*" || tokens[i] === "/") {
-          let subExpr = [tokens[i]];
-          let j = i + 1;
-          let spliceStart = i;
-          if (tokens[i - 1]) {
-            subExpr.unshift(tokens[i - 1]);
-            spliceStart--;
-          }
-          if (tokens[i + 1]) {
-            subExpr.push(tokens[i + 1]);
-            j++;
-          }
-          const signsInsteatOfMulAndDiv = allCanUseSigns.filter(
-            (sign) => sign !== "*" && sign !== "/"
-          );
-          while (
-            !signsInsteatOfMulAndDiv.includes(tokens[j]) &&
-            j < tokens.length &&
-            tokens[j]
-          ) {
-            subExpr.push(tokens[j]);
-            j++;
-            continue;
-          }
-          tokens.splice(spliceStart, subExpr.length, subExpr.join(""));
-          continue;
-        } else i++;
-      }
+      combineMul(tokens);
       formatting(tokens);
       let numList = [];
       let othersList = [];
@@ -511,7 +669,7 @@ export function calculate(expr) {
             continue;
           }
           const resultObj = evalSubExprMulAndDiv(subExpr);
-          tokenExpr.splice(spliceStart, subExpr.length, resultObj.result);
+          tokenExpr.splice(spliceStart, subExpr.length, ...resultObj.result);
           console.log("乘法计算完毕tokenExpr: " + tokenExpr);
           i += resultObj.totalLength - 1;
           console.log(
