@@ -2,7 +2,7 @@
   padding: 15px 0;
 
   width: 40px;
-  height: 100vh;
+  height: calc(100vh - 30px);
 
   background-color: #333333;
   border-radius: 8px;

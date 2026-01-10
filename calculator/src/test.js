@@ -1,4 +1,5 @@
 import {
+  settings,
   canUseUnit,
   canUseFunc,
   canUseFuncNames,
@@ -8,7 +9,7 @@ import {
   constantQuantity,
   canUseQuantityNames,
 } from "./mainInformation.js";
-//已经有的函数
+
 const mulOrDivFunc = (numList) => {
   formatting(numList);
   for (let i = 0; i < numList.length; i++) {
@@ -30,7 +31,11 @@ const mulOrDivFunc = (numList) => {
           );
         }
       }
-      numList.splice(i - 1, 3, numList[i] === "*" ? a * b : a / b);
+      numList.splice(
+        i - 1,
+        3,
+        numList[i] === "*" ? String(a * b) : String(a / b)
+      );
       i--;
       continue;
     }
@@ -79,7 +84,7 @@ const formatting = (tokenExpr) => {
       tokenExpr.splice(i, 0, "*");
       i++;
     }
-    if (!isNaN(tokenExpr[i + 1])) {
+    if (!isNaN(tokenExpr[i + 1]) && !canUseFuncNames.includes(tokenExpr[i])) {
       tokenExpr.splice(i + 1, 0, "*");
       i++;
     }
@@ -87,12 +92,38 @@ const formatting = (tokenExpr) => {
   return tokenExpr;
 };
 
-const findTimes = (singleToken) => {
-  let variates = singleToken.match(/\*?[a-zA-Z]+/g) || [];
-  return variates.length;
+const combineMul = (tokens) => {
+  let i = 0;
+  while (i < tokens.length) {
+    if (tokens[i] === "*" || tokens[i] === "/") {
+      let subExpr = [tokens[i]];
+      let j = i + 1;
+      let spliceStart = i;
+      if (tokens[i - 1]) {
+        subExpr.unshift(tokens[i - 1]);
+        spliceStart--;
+      }
+      if (tokens[i + 1]) {
+        subExpr.push(tokens[i + 1]);
+        j++;
+      }
+      const signsInsteatOfMulAndDiv = allCanUseSigns.filter(
+        (sign) => sign !== "*" && sign !== "/"
+      );
+      while (
+        !signsInsteatOfMulAndDiv.includes(tokens[j]) &&
+        j < tokens.length &&
+        tokens[j]
+      ) {
+        subExpr.push(tokens[j]);
+        j++;
+        continue;
+      }
+      tokens.splice(spliceStart, subExpr.length, subExpr.join(""));
+      continue;
+    } else i++;
+  }
 };
-
-// console.log(findTimes("e*9*e*e*Pi"));
 
 const polynomialMul = (allTokens) => {
   for (let i = 0; i < allTokens.length; i++) {
@@ -154,7 +185,9 @@ const polynomialMul = (allTokens) => {
           console.log(allOther);
           console.log(`firstNum: ${firstNum},  secondNum: ${secondNum}`);
           const togetherNum = mulOrDivFunc([firstNum, "*", secondNum]);
-          const result = togetherNum.join("") + allOther.join("");
+          allOther = allOther.join("*");
+          allOther = "*" + allOther;
+          const result = togetherNum.join("") + allOther;
           allResult.push(togetherSym);
           allResult.push(result);
         }
@@ -164,7 +197,43 @@ const polynomialMul = (allTokens) => {
   return allResult;
 };
 
-console.log(polynomialMul([["4"], ["e"]]));
+const finalFormatting = (tokens) => {
+  tokens = tokens.join("");
+  tokens = tokens.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
+  formatting(tokens);
+  combineMul(tokens);
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].includes("*") || tokens[i].includes("/")) {
+      let final;
+      for (let j = tokens[i].length - 1; j >= 0; j--) {
+        if (!isNaN(tokens[i][j])) {
+          const number = tokens[i].slice(0, j + 1);
+          const others = tokens[i].slice(j + 1);
+          const result = mulOrDivFunc(
+            number.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || []
+          );
+          if (result.length === 1 && result[0] === "0") {
+            final = "0";
+            break;
+          }
+          if (result.length === 1 && result[0] === "1" && others[0] === "*") {
+            final = others.slice(1);
+            break;
+          }
+          final = result.join("") + others;
+          break;
+        }
+      }
+      if (final) {
+        tokens.splice(i, 1, final);
+      }
+    }
+  }
+  console.log(tokens);
+  tokens = tokens.join("");
+  tokens = tokens.replace(/\+0|0\+/g, "");
+  tokens = tokens.replace(/^0\-/g, "-");
+  return tokens;
+};
 
-// const str = "3*e+4*Pi";
-// console.log(str.match(/\-|\+|[^-+]+/g));
+console.log(finalFormatting(["0-7*e+1*1*1*e*e+0*67/Pi"]));

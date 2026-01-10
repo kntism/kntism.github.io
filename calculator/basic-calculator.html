@@ -13,7 +13,9 @@
         display: flex;
       }
 
-      #rightSide {
+      #midSide {
+        height: 100vh;
+        overflow-y: auto; /* 纵向内容过多时显示滚动条 */
         flex-grow: 1;
         flex-shrink: 1;
         display: flex;
@@ -136,43 +138,6 @@
   </head>
 
   <body>
-    <div id="settingFrame">
-      <div id="searchAndQuit">
-        <input
-          type="text"
-          id="searchForSetting"
-          placeholder="Search for setting"
-        />
-        <img
-          src="./pic/quit.svg"
-          width="50px"
-          height="50px"
-          alt="quit"
-          id="settingQuit"
-        />
-      </div>
-
-      <ul id="settingList">
-        <ul class="subList">
-          <li class="theme">Calculate</li>
-          <!-- <li class="listContent">hello</li> -->
-          <div class="settingChoice listContent">
-            <span>degree system or rad system</span>
-            <div class="choiceOption abrazineGlassStyle" id="degree-or-rad">
-              <div class="choiceShadow"></div>
-              <div class="choice" id="generalChoice">general</div>
-              <div class="choice" id="degreeChoice">degree</div>
-              <div class="lastChoice" id="radChoice">rad</div>
-            </div>
-          </div>
-        </ul>
-        <ul class="subList">
-          <li class="theme">Other</li>
-          <li class="listContent">content</li>
-        </ul>
-      </ul>
-    </div>
-
     <div id="basicCalculatorPage">
       <nav id="sidebar">
         <ul id="siderPicList">
@@ -189,7 +154,7 @@
           <li>others</li>
         </ul>
       </nav>
-      <div id="rightSide">
+      <div id="midSide">
         <h1 id="basicCalculatorMainTitle">Basic Calculator</h1>
         <div id="basicCalculator">
           <div class="inputFrame">
@@ -200,6 +165,41 @@
           </div>
           <!-- <div id="styleCursor"></div> -->
         </div>
+      </div>
+      <div id="settingFrame">
+        <div id="searchAndQuit">
+          <input
+            type="text"
+            id="searchForSetting"
+            placeholder="Search for setting"
+          />
+          <img
+            src="./pic/quit.svg"
+            width="50px"
+            height="50px"
+            alt="quit"
+            id="settingQuit"
+          />
+        </div>
+        <ul id="settingList">
+          <ul class="subList">
+            <li class="theme">Calculate</li>
+            <!-- <li class="listContent">hello</li> -->
+            <div class="settingChoice listContent">
+              <span>degree system or rad system</span>
+              <div class="choiceOption abrazineGlassStyle" id="degree-or-rad">
+                <div class="choiceShadow"></div>
+                <div class="choice" id="generalChoice">general</div>
+                <div class="choice" id="degreeChoice">degree</div>
+                <div class="lastChoice" id="radChoice">rad</div>
+              </div>
+            </div>
+          </ul>
+          <ul class="subList">
+            <li class="theme">Other</li>
+            <li class="listContent">content</li>
+          </ul>
+        </ul>
       </div>
     </div>
 

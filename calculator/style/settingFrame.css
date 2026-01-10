@@ -1,21 +1,21 @@
 #settingFrame {
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   align-items: center;
   /* justify-content: center; */
   /* width: 900px; */
-  width: 70vw;
-  height: 70vh;
+  width: 0vw;
+  height: 100vh;
   background-color: #4d4d4d;
-  visibility: hidden;
+  /* visibility: hidden; */
   /* background-color: #4d4d4d; */
-  border-radius: 20px;
+  border-radius: 8px;
   box-shadow: 4px 4px 8px #000;
-  position: fixed;
-  z-index: 10;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* position: fixed;
+  z-index: 10; */
+  top: 0;
+  right: 0;
   overflow: hidden;
   transition: width 0.2s ease;
 }
@@ -30,7 +30,7 @@
   min-width: 70px;
   flex-grow: 1;
   height: 50px;
-  border-radius: 20px;
+  border-radius: 8px;
   border: 3px solid #313131;
   background-color: #4d4d4d;
   color: #ffffff;

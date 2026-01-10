@@ -5,13 +5,13 @@ const settingQuit = document.getElementById("settingQuit");
 const settingFrame = document.getElementById("settingFrame");
 
 function showSetting() {
-  // settingFrame.style.display = "block";
-  settingFrame.style.visibility = "visible";
+  // settingFrame.style.visibility = "visible";
+  settingFrame.style.width = "40vw";
 }
 
 function hideSetting() {
-  // settingFrame.style.display = "none";
-  settingFrame.style.visibility = "hidden";
+  // settingFrame.style.visibility = "hidden";
+  settingFrame.style.width = "0vw";
 }
 
 homeButton.addEventListener("click", function () {

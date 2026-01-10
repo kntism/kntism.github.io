@@ -11,6 +11,58 @@ import {
 } from "./mainInformation.js";
 export function calculate(expr) {
   try {
+    const finalFormatting = (res) => {
+      let tokens = res;
+      if (Array.isArray(tokens)) {
+        tokens = tokens.join("");
+      }
+      tokens =
+        tokens.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
+      combineBrackets(tokens);
+      formatting(tokens);
+      combineMul(tokens);
+      console.log(`finalFormatting: ${tokens}`);
+      for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i].includes("*") || tokens[i].includes("/")) {
+          let final;
+          for (let j = tokens[i].length - 1; j >= 0; j--) {
+            if (!isNaN(tokens[i][j])) {
+              const number = tokens[i].slice(0, j + 1);
+              const others = tokens[i].slice(j + 1);
+              const result = mulOrDivFunc(
+                number.match(
+                  /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+                ) || []
+              );
+              if (result.length === 1 && result[0] === "0") {
+                final = "0";
+                break;
+              }
+              if (
+                result.length === 1 &&
+                result[0] === "1" &&
+                others[0] === "*"
+              ) {
+                final = others.slice(1);
+                break;
+              }
+              final = result.join("") + others;
+              break;
+            }
+          }
+          if (final) {
+            tokens.splice(i, 1, final);
+          }
+        }
+      }
+      for (let i = 0; i < tokens.length; i++) {}
+      tokens = tokens.join("");
+      tokens = tokens.replace(/\+0|0\+/g, "");
+      tokens = tokens.replace(/^0\-/g, "-");
+      tokens = tokens.replace(/^\+/g, "");
+      return tokens;
+    };
+
     const addOrSubFunc = (numList) => {
       formatting(numList);
       for (let i = 0; i < numList.length; i++) {
@@ -60,7 +112,11 @@ export function calculate(expr) {
               );
             }
           }
-          numList.splice(i - 1, 3, numList[i] === "*" ? a * b : a / b);
+          numList.splice(
+            i - 1,
+            3,
+            numList[i] === "*" ? String(a * b) : String(a / b)
+          );
           i--;
           continue;
         }
@@ -101,6 +157,19 @@ export function calculate(expr) {
       }
     };
 
+    const combineBrackets = (tokens) => {
+      for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "(") {
+          const rightBracketIndex = tokens.indexOf(")", i);
+          tokens.splice(
+            i,
+            rightBracketIndex - i + 1,
+            tokens.slice(i, rightBracketIndex + 1).join("")
+          );
+        }
+      }
+    };
+
     const polynomialMul = (allTokens) => {
       for (let i = 0; i < allTokens.length; i++) {
         if (allTokens[i].length === 0) {
@@ -126,11 +195,9 @@ export function calculate(expr) {
             allTokens[1][j] !== "-"
           ) {
             if (!isNaN(allTokens[0][i]) && !isNaN(allTokens[1][j])) {
-              const result = mulOrDivFunc([
-                allTokens[0][i],
-                "*",
-                allTokens[1][j],
-              ]);
+              const result = String(
+                mulOrDivFunc([allTokens[0][i], "*", allTokens[1][j]])
+              );
               allResult.push(togetherSym);
               allResult.push(...result);
             } else {
@@ -348,19 +415,29 @@ export function calculate(expr) {
       // const notDivResult = [...notDivList];
       console.log(`MULdivResult: ${divList}, MULnotDivResult: ${notDivList}`);
       console.log(`MULnumList: ${numList}, MULnotDivResult: ${notDivList}`);
-      let finalResult = polynomialMul([[...numList], notDivList[0]]);
+      let finalResult = polynomialMul([
+        [...numList],
+        notDivList[0] ? notDivList[0] : [],
+      ]);
       if (divList.length !== 0) {
-        finalResult.push("/");
-        finalResult.push(...divList);
+        finalResult.unshift("(");
+        finalResult.push(")", "/", "(");
+        finalResult.push(...divList[0]);
+        finalResult.push(")");
       }
       finalResult = finalResult.join("");
-      finalResult = finalResult.match(/\-|\+|[^-+]+/g);
-
-      // if (numList.length !== 0) {
-      //   finalResult = polynomialMul([[...numList], notDivList[0]]);
-      // } else {
-      //   finalResult = notDivList[0];
-      // }
+      finalResult = finalResult.match(/\-|\+|\(|\)|[^-+()]+/g);
+      for (let i = 0; i < finalResult.length; i++) {
+        if (finalResult[i] === "(") {
+          const rightBracketIndex = finalResult.indexOf(")", i);
+          finalResult.splice(
+            i,
+            rightBracketIndex - i + 1,
+            finalResult.slice(i, rightBracketIndex + 1).join("")
+          );
+        }
+      }
+      combineMul(finalResult);
       console.log(`MULfinalResult: ${finalResult}`);
       return {
         result: finalResult,
@@ -372,7 +449,10 @@ export function calculate(expr) {
       let tokens = [...subExpr];
       for (let i = 0; i < tokens.length; i++) {
         if (tokens[i] === "-") {
-          if (tokens[i + 1].includes("+") || tokens[i + 1].includes("-")) {
+          if (
+            (tokens[i + 1].includes("+") || tokens[i + 1].includes("-")) &&
+            !tokens[i + 1].includes("/")
+          ) {
             let sub =
               tokens[i + 1].match(
                 /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
@@ -398,8 +478,9 @@ export function calculate(expr) {
           ) || [])
         );
       }
-      combineMul(tokens);
+      combineBrackets(tokens);
       formatting(tokens);
+      combineMul(tokens);
       let numList = [];
       let othersList = [];
       for (let i = tokens.length - 1; i >= 0; i--) {
@@ -460,7 +541,7 @@ export function calculate(expr) {
                 notVariateOrFunction.splice(j, 1);
               }
             } else {
-              break;
+              continue;
             }
           }
           if (notVariateOrFunction.length > 0) {
@@ -511,16 +592,24 @@ export function calculate(expr) {
               `此次 key: ${sameKey} 此次 sym: ${othersObj[sameKey][sym]} 此次非变量或函数：${othersObj[sameKey][notVariateOrFunction]}`
             );
             _sameList.push(othersObj[sameKey][sym]);
-            _sameList.push(othersObj[sameKey][notVariateOrFunction]);
+            _sameList.push(...othersObj[sameKey][notVariateOrFunction]);
           }
 
           console.log(`_sameList: ${_sameList}`);
 
-          let simplifiedResult = `${addOrSubFunc([
+          const target = [
             othersObj[key][sym],
             ...othersObj[key][notVariateOrFunction],
             ..._sameList,
-          ])}${othersObj[key][variateOrFunction].join("")}`;
+          ];
+          // console.log("IMPORTANT" + othersObj[key][sym]);
+          // console.log(othersObj[key][notVariateOrFunction]);
+          // console.log(_sameList);
+          // console.log(target);
+
+          let simplifiedResult = `${addOrSubFunc(
+            mulOrDivFunc(target)
+          )}${othersObj[key][variateOrFunction].join("")}`;
 
           if (!allOperators.includes(simplifiedResult[0])) {
             simplifiedResult = "+" + simplifiedResult;
@@ -764,14 +853,17 @@ export function calculate(expr) {
     if (
       tokens.length === 1 &&
       tokens[0] &&
-      !allCanUseSigns.includes(tokens[0])
+      !allCanUseSigns.includes(tokens[0]) &&
+      !canUseFuncNames.includes(tokens[0])
     ) {
       console.log(`----最终结果 : tokens: ${tokens[0]}`);
-      return tokens[0];
+      return finalFormatting(tokens[0]);
+      // return tokens[0];
     } else {
-      const finalResult = cal(tokens);
+      const finalResult = String(cal(tokens));
       console.log(`----最终结果 : tokens: ${finalResult}`);
-      return finalResult;
+      return finalFormatting(finalResult);
+      // return finalResult;
     }
   } catch (e) {
     return e.message;
