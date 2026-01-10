@@ -1,0 +1,453 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --muted: #999999;
+  --border: #000000;
+  --accent: #000000;
+  --accent-fg: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* 顶部栏 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--fg);
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* 分类切换 */
+.category-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: 2px solid var(--border);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab:hover {
+  background: #f5f5f5;
+}
+
+.tab.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+/* 结果显示 */
+.result-display {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--border);
+  margin-bottom: 24px;
+  padding: 32px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.result-display .placeholder {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.result-display .result-animate {
+  font-size: 32px;
+  font-weight: 900;
+  animation: shake 0.1s infinite;
+}
+
+.result-display .result-final {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.result-display .result-name {
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1.1;
+  animation: reveal 0.4s ease-out;
+}
+
+/* 抽取按钮 */
+.draw-btn {
+  width: 100%;
+  padding: 20px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.draw-btn:hover {
+  transform: scale(1.02);
+}
+
+.draw-btn:active {
+  transform: scale(0.98);
+}
+
+.draw-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 计数 */
+.counts {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.counts span {
+  font-weight: 700;
+  color: var(--fg);
+}
+
+/* 模态框 */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.modal.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  border-top: 3px solid var(--border);
+  padding: 24px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal.visible .modal-panel {
+  transform: translateY(0);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--fg);
+  transition: all 0.15s ease;
+}
+
+.close-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* 模态框标签 */
+.modal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-tab {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 2px solid var(--border);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-tab.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+/* 输入行 */
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+#recipe-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  font-family: inherit;
+  font-size: 15px;
+  background: var(--bg);
+}
+
+#recipe-input:focus {
+  outline: none;
+}
+
+#recipe-input::placeholder {
+  color: var(--muted);
+}
+
+.add-btn {
+  padding: 0 20px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.add-btn:hover {
+  opacity: 0.9;
+}
+
+/* 菜谱列表 */
+.recipe-list-wrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.text-btn:hover {
+  color: var(--fg);
+}
+
+.recipe-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 2px solid var(--border);
+  padding: 8px;
+}
+
+.recipe-list .empty {
+  display: block;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 32px 16px;
+}
+
+.recipe-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--bg);
+  font-size: 15px;
+}
+
+.recipe-item:last-child {
+  margin-bottom: 0;
+}
+
+.delete-btn {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.delete-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--fg);
+  color: var(--bg);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 2000;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 动画 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 响应式 */
+@media (min-width: 600px) {
+  .modal-panel {
+    top: 50%;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: 90%;
+    max-width: 400px;
+    border: 3px solid var(--border);
+    border-radius: 0;
+  }
+
+  .modal.visible .modal-panel {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 24px;
+  }
+
+  .result-display .result-name {
+    font-size: 32px;
+  }
+}

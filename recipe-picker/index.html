@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>今天吃什么</title>
+    <link rel="stylesheet" href="/recipe-picker/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- 顶部栏 -->
+      <header class="header">
+        <h1 class="title">今天吃什么</h1>
+        <button id="open-modal-btn" class="icon-btn" aria-label="菜谱管理">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 5h14M3 10h14M3 15h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- 分类切换 -->
+      <div class="category-tabs">
+        <button class="tab active" data-category="breakfast">早餐</button>
+        <button class="tab" data-category="non-breakfast">正餐</button>
+      </div>
+
+      <!-- 结果显示区 -->
+      <div id="result-display" class="result-display">
+        <span class="placeholder">选择分类，点击抽取</span>
+      </div>
+
+      <!-- 抽取按钮 -->
+      <button id="draw-btn" class="draw-btn">抽取</button>
+
+      <!-- 计数 -->
+      <p class="counts">
+        <span id="breakfast-count">0</span> 道早餐 · <span id="non-breakfast-count">0</span> 道正餐
+      </p>
+    </div>
+
+    <!-- 管理面板 -->
+    <div id="modal" class="modal">
+      <div class="modal-backdrop" id="modal-backdrop"></div>
+      <div class="modal-panel">
+        <div class="modal-header">
+          <h2>菜谱管理</h2>
+          <button id="close-modal-btn" class="close-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M4 4l12 12M4 16L16 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-tab="breakfast">早餐</button>
+          <button class="modal-tab" data-tab="non-breakfast">正餐</button>
+        </div>
+
+        <div class="input-row">
+          <input
+            type="text"
+            id="recipe-input"
+            placeholder="添加菜谱..."
+            maxlength="30"
+          />
+          <button id="add-btn" class="add-btn">添加</button>
+        </div>
+
+        <div class="recipe-list-wrapper">
+          <div class="list-header">
+            <span>已添加 (<span id="modal-recipe-count">0</span>)</span>
+            <button id="clear-all-btn" class="text-btn">清空</button>
+          </div>
+          <div id="recipe-list" class="recipe-list">
+            <span class="empty">暂无菜谱</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/recipe-picker/app.js"></script>
+  </body>
+</html>
