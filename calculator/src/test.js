@@ -197,43 +197,9 @@ const polynomialMul = (allTokens) => {
   return allResult;
 };
 
-const finalFormatting = (tokens) => {
-  tokens = tokens.join("");
-  tokens = tokens.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
-  formatting(tokens);
-  combineMul(tokens);
-  for (let i = 0; i < tokens.length; i++) {
-    if (tokens[i].includes("*") || tokens[i].includes("/")) {
-      let final;
-      for (let j = tokens[i].length - 1; j >= 0; j--) {
-        if (!isNaN(tokens[i][j])) {
-          const number = tokens[i].slice(0, j + 1);
-          const others = tokens[i].slice(j + 1);
-          const result = mulOrDivFunc(
-            number.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || []
-          );
-          if (result.length === 1 && result[0] === "0") {
-            final = "0";
-            break;
-          }
-          if (result.length === 1 && result[0] === "1" && others[0] === "*") {
-            final = others.slice(1);
-            break;
-          }
-          final = result.join("") + others;
-          break;
-        }
-      }
-      if (final) {
-        tokens.splice(i, 1, final);
-      }
-    }
-  }
-  console.log(tokens);
-  tokens = tokens.join("");
-  tokens = tokens.replace(/\+0|0\+/g, "");
-  tokens = tokens.replace(/^0\-/g, "-");
+const findTimes = (tokens) => {
+  for (let i = 0; i < tokens.length; i++) {}
   return tokens;
 };
 
-console.log(finalFormatting(["0-7*e+1*1*1*e*e+0*67/Pi"]));
+console.log(findTimes("e*e/Pi*fu"));

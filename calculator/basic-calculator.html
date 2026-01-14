@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathlive"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <meta charset="UTF-8" />
+    <title>Basic Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style/style.css" />
     <link rel="stylesheet" href="./style/sidebar.css" />
     <link rel="stylesheet" href="./style/settingFrame.css" />
     <link rel="stylesheet" href="./style/setting.css" />
-    <title>Basic Calculator</title>
     <style>
+      .mf {
+        background-color: #686868;
+        height: 100%;
+        font-size: 50px;
+        outline: none;
+        border: none;
+        text-shadow: 0 0 2px #ffffff;
+        color: #fff;
+      }
+
       #basicCalculatorPage {
         display: flex;
       }
@@ -71,7 +87,7 @@
         padding: 0px;
         /* margin: 0px; */
         width: 100%;
-        transition: height 1s;
+        min-height: 72px;
       }
 
       #styleCursor {
@@ -160,7 +176,12 @@
           <div class="inputFrame">
             <div class="inputIndex">1</div>
             <div class="inputDetails">
-              <div class="input" contenteditable="true"></div>
+              <!-- <div class="input" contenteditable="true"></div> -->
+              <math-field
+                class="mf"
+                virtual-keyboard-mode="auto"
+                smart-fence
+              ></math-field>
             </div>
           </div>
           <!-- <div id="styleCursor"></div> -->
@@ -205,8 +226,9 @@
 
     <script src="./src/basicCalculator/setting.js" type="module"></script>
     <script src="./src/basicCalculator/hinkFrame.js" type="module"></script>
-    <script src="./src/basicCalculator/colerInput.js" type="module"></script>
+    <!-- <script src="./src/basicCalculator/colerInput.js" type="module"></script> -->
     <script src="./src/basicCalculator/InputEvent.js" type="module"></script>
     <script src="./src/basicCalculator/sideBarEvent.js" type="module"></script>
+    <script src="./src/math.js" type="module"></script>
   </body>
 </html>

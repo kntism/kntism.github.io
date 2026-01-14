@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>实时公式格式化-可编辑div(动态增删)</title>
+    <!-- ✅ 你指定的唯一引入方式，保留不动 -->
+    <script defer src="https://cdn.jsdelivr.net/npm/mathlive"></script>
+
+    <style>
+      /* 样式美化：可编辑 div 的样式，按需修改 */
+      .math-edit-div {
+        width: 90%;
+        min-height: 60px;
+        padding: 12px;
+        margin: 8px 0;
+        border: 1px solid #4285f4;
+        border-radius: 6px;
+        font-size: 16px;
+        line-height: 1.6;
+        outline: none;
+      }
+      .math-edit-div:focus {
+        border-color: #1a73e8;
+        box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+      }
+      button {
+        padding: 8px 16px;
+        margin: 0 4px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background: #4285f4;
+        color: white;
+      }
+      button:nth-child(2) {
+        background: #ea4335;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="padding: 20px">
+      <h3>实时输入自动格式化数学公式 (动态增删 div)</h3>
+      <button onclick="addMathEditDiv()">📝 新增公式输入框</button>
+      <button onclick="delMathEditDiv()">🗑️ 删除当前输入框</button>
+      <div id="math-div-container"></div>
+    </div>
+
+    <script>
+      // ========== 核心配置 ==========
+      const MATH_EDIT_CLASS = "math-edit-div";
+      const container = document.getElementById("math-div-container");
+
+      // ========== 核心方法 1：给单个可编辑 div 绑定「实时公式格式化功能」 ==========
+      function bindMathLiveToDiv(divElement) {
+        // ✅ 修复点 1：命名空间从 MathLive 改为 全小写 mathlive (2.x 强制要求)
+        mathlive.makeMathField(divElement, {
+          smartFence: true,
+          textStyle: { fontSize: "16px" },
+          mathStyle: { fontSize: "18px", color: "#1a73e8" },
+          allowText: true,
+          autoFocus: false,
+        });
+      }
+
+      // ========== 核心方法 2：动态新增公式输入框 ==========
+      function addMathEditDiv() {
+        const newDiv = document.createElement("div");
+        newDiv.className = MATH_EDIT_CLASS;
+        newDiv.contentEditable = true;
+        newDiv.setAttribute("spellcheck", "false");
+        newDiv.placeholder =
+          "请输入数学公式，如：x^2 + sqrt(2) 、(a+b)/2、\\int_0^1 xdx";
+
+        bindMathLiveToDiv(newDiv);
+        container.appendChild(newDiv);
+        newDiv.focus();
+      }
+
+      // ========== 核心方法 3：删除当前选中的公式输入框 ==========
+      function delMathEditDiv() {
+        const allMathDivs = document.querySelectorAll(`.${MATH_EDIT_CLASS}`);
+        if (allMathDivs.length === 0) return;
+
+        const activeDiv = document.activeElement;
+        if (activeDiv && activeDiv.classList.contains(MATH_EDIT_CLASS)) {
+          container.removeChild(activeDiv);
+        } else {
+          container.removeChild(allMathDivs[allMathDivs.length - 1]);
+        }
+      }
+
+      // ========== ✅ 修复点 2+3：核心！2.x 必须用 mathlive.ready() 等待加载完成 + 替换 onload ==========
+      mathlive.ready().then(() => {
+        addMathEditDiv(); // 页面就绪后默认创建一个公式框
+      });
+    </script>
+  </body>
+</html>

@@ -208,7 +208,7 @@ const canUseFunc = {
 };
 
 const constantQuantity = {
-  Pi: { value: Math.PI },
+  pi: { value: Math.PI },
   e: { value: Math.E },
   Infinity: { value: Infinity },
 };

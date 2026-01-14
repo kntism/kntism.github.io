@@ -9,646 +9,644 @@ import {
   constantQuantity,
   canUseQuantityNames,
 } from "./mainInformation.js";
+
+import { convertLatexToAsciiMath } from "https://unpkg.com/mathlive?module";
+
+const convertLaTeXToMath = (latex) => {
+  // 使用 MathLive 将 LaTeX 转换为纯文本数学表达式
+  return convertLatexToAsciiMath(latex);
+};
+
+console.log(convertLaTeXToMath("\\frac12"));
+
+const finalFormatting = (res) => {
+  let tokens = res;
+  if (Array.isArray(tokens)) {
+    tokens = tokens.join("");
+  }
+  tokens = tokens.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
+  combineBrackets(tokens);
+  formatting(tokens);
+  combineMul(tokens);
+  console.log(`finalFormatting: ${tokens}`);
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].includes("*") || tokens[i].includes("/")) {
+      let final;
+      for (let j = tokens[i].length - 1; j >= 0; j--) {
+        if (!isNaN(tokens[i][j])) {
+          const number = tokens[i].slice(0, j + 1);
+          const others = tokens[i].slice(j + 1);
+          const result = mulOrDivFunc(
+            number.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || []
+          );
+          if (result.length === 1 && result[0] === "0") {
+            final = "0";
+            break;
+          }
+          if (result.length === 1 && result[0] === "1" && others[0] === "*") {
+            final = others.slice(1);
+            break;
+          }
+          final = result.join("") + others;
+          break;
+        }
+      }
+      if (final) {
+        tokens.splice(i, 1, final);
+      }
+    }
+  }
+  for (let i = 0; i < tokens.length; i++) {}
+  tokens = tokens.join("");
+  tokens = tokens.replace(/\+0|0\+/g, "");
+  tokens = tokens.replace(/^0\-/g, "-");
+  tokens = tokens.replace(/^\+/g, "");
+  return tokens;
+};
+
+const addOrSubFunc = (numList) => {
+  formatting(numList);
+  for (let i = 0; i < numList.length; i++) {
+    if (numList[i] === "+" || numList[i] === "-") {
+      const a = +numList[i - 1],
+        b = +numList[i + 1];
+      if (isNaN(a) || isNaN(b)) {
+        if (
+          allOperators.includes(numList[i + 1]) ||
+          allOperators.includes(numList[i - 1]) ||
+          !numList[i - 1] ||
+          !numList[i + 1]
+        ) {
+          throw new Error(
+            "There is no can use object before or after '+' or '-'" +
+              "numList: " +
+              numList
+          );
+        }
+      }
+      numList.splice(i - 1, 3, numList[i] === "+" ? a + b : a - b);
+      i--;
+      continue;
+    }
+  }
+  return numList;
+};
+
+const mulOrDivFunc = (numList) => {
+  formatting(numList);
+  for (let i = 0; i < numList.length; i++) {
+    if (numList[i] === "*" || numList[i] === "/") {
+      const a = +numList[i - 1],
+        b = +numList[i + 1];
+      if (numList[i] === "/" && numList[i + 1] === "0") {
+        throw new Error("You can't divide by 0");
+      }
+      if (isNaN(a) || isNaN(b)) {
+        if (
+          allOperators.includes(numList[i + 1]) ||
+          allOperators.includes(numList[i - 1]) ||
+          !numList[i - 1] ||
+          !numList[i + 1]
+        ) {
+          throw new Error(
+            "There is no can use object before or after '*' or '/'"
+          );
+        }
+      }
+      numList.splice(
+        i - 1,
+        3,
+        numList[i] === "*" ? String(a * b) : String(a / b)
+      );
+      i--;
+      continue;
+    }
+  }
+  return numList;
+};
+
+const combineMul = (tokens) => {
+  let i = 0;
+  while (i < tokens.length) {
+    if (tokens[i] === "*" || tokens[i] === "/") {
+      let subExpr = [tokens[i]];
+      let j = i + 1;
+      let spliceStart = i;
+      if (tokens[i - 1]) {
+        subExpr.unshift(tokens[i - 1]);
+        spliceStart--;
+      }
+      if (tokens[i + 1]) {
+        subExpr.push(tokens[i + 1]);
+        j++;
+      }
+      const signsInsteatOfMulAndDiv = allCanUseSigns.filter(
+        (sign) => sign !== "*" && sign !== "/"
+      );
+      while (
+        !signsInsteatOfMulAndDiv.includes(tokens[j]) &&
+        j < tokens.length &&
+        tokens[j]
+      ) {
+        subExpr.push(tokens[j]);
+        j++;
+        continue;
+      }
+      tokens.splice(spliceStart, subExpr.length, subExpr.join(""));
+      continue;
+    } else i++;
+  }
+};
+
+const combineBrackets = (tokens) => {
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i] === "(") {
+      const rightBracketIndex = tokens.indexOf(")", i);
+      tokens.splice(
+        i,
+        rightBracketIndex - i + 1,
+        tokens.slice(i, rightBracketIndex + 1).join("")
+      );
+    }
+  }
+};
+
+const polynomialMul = (allTokens) => {
+  for (let i = 0; i < allTokens.length; i++) {
+    if (allTokens[i].length === 0) {
+      allTokens.splice(i, 1);
+    }
+  }
+  if (allTokens.length === 0) {
+    return [];
+  }
+  if (allTokens.length === 1) {
+    return allTokens[0];
+  }
+  let allResult = [];
+  for (let i = 0; i < allTokens[0].length; i++) {
+    const firstSym = allTokens[0][i - 1] === "-" ? 0 : 1;
+    for (let j = 0; j < allTokens[1].length; j++) {
+      const secondSym = allTokens[1][j - 1] === "-" ? 0 : 1;
+      const togetherSym = firstSym === secondSym ? "+" : "-";
+      if (
+        allTokens[0][i] !== "+" &&
+        allTokens[0][i] !== "-" &&
+        allTokens[1][j] !== "+" &&
+        allTokens[1][j] !== "-"
+      ) {
+        if (!isNaN(allTokens[0][i]) && !isNaN(allTokens[1][j])) {
+          const result = String(
+            mulOrDivFunc([allTokens[0][i], "*", allTokens[1][j]])
+          );
+          allResult.push(togetherSym);
+          allResult.push(...result);
+        } else {
+          let firstNum = allTokens[0][i];
+          let secondNum = allTokens[1][j];
+          let firstOther;
+          let secondOther;
+          if (isNaN(allTokens[0][i])) {
+            if (!isNaN(allTokens[0][i])) {
+              firstNum = allTokens[0][i].slice(0, 1);
+              firstOther = allTokens[0][i].slice(1);
+            } else {
+              firstNum = 1;
+              firstOther = allTokens[0][i];
+            }
+          }
+          if (isNaN(allTokens[1][j])) {
+            if (!isNaN(allTokens[1][j])) {
+              secondNum = allTokens[1][j].slice(0, 1);
+              secondOther = allTokens[1][j].slice(1);
+            } else {
+              secondNum = 1;
+              secondOther = allTokens[1][j];
+            }
+          }
+          let allOther = [firstOther, secondOther];
+          for (let i = 0; i < allOther.length; i++) {
+            if (!allOther[i]) {
+              allOther.splice(i, 1);
+            }
+          }
+          console.log(allOther);
+          console.log(`firstNum: ${firstNum},  secondNum: ${secondNum}`);
+          const togetherNum = mulOrDivFunc([firstNum, "*", secondNum]);
+          allOther = allOther.join("*");
+          allOther = "*" + allOther;
+          const result = togetherNum.join("") + allOther;
+          allResult.push(togetherSym);
+          allResult.push(result);
+        }
+      }
+    }
+  }
+  return allResult;
+};
+
+const conversionOfScientificNotation = (result) => {
+  let tokenResult = result;
+  if (!Array.isArray(tokenResult)) {
+    tokenResult = String(result).match(
+      /((\+|\-)?\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+    );
+  }
+
+  for (let i = 0; i < tokenResult.length; i++) {
+    if (tokenResult[i] === "e") {
+      if (isNaN(tokenResult[i + 1]) || isNaN(tokenResult[i - 1])) continue;
+      const normalNotationExpr = [
+        tokenResult[i - 1],
+        "*",
+        "10",
+        "^",
+        tokenResult[i + 1],
+      ];
+      // +tokenResult[i - 1] * Math.pow(10, +tokenResult[i + 1]);
+      tokenResult.splice(i - 1, 3, normalNotationExpr);
+      i--;
+      continue;
+    } else continue;
+  }
+  return tokenResult;
+};
+
+const formatting = (tokenExpr) => {
+  let i = tokenExpr.length - 1;
+  while (i >= 0) {
+    if (tokenExpr[i] === "+" || tokenExpr[i] === "-") {
+      if (
+        (allOperators.includes(tokenExpr[i - 1]) || !tokenExpr[i - 1]) && //前面是运算符号或没有值
+        !isNaN(+tokenExpr[i + 1]) //并且后面是个数字
+      ) {
+        tokenExpr.splice(i, 2, tokenExpr[i] + tokenExpr[i + 1]);
+        i--;
+        continue;
+      } else {
+        i--;
+      }
+    } else {
+      i--;
+    }
+  }
+
+  for (let i = 0; i < tokenExpr.length; i++) {
+    if (tokenExpr[i] !== "(") continue;
+    if (!isNaN(tokenExpr[i - 1]) || tokenExpr[i - 1] === ")") {
+      tokenExpr.splice(i, 0, "*");
+      i++;
+    }
+  }
+
+  for (let i = 0; i < tokenExpr.length; i++) {
+    if (tokenExpr[i] !== ")") continue;
+    if (!isNaN(tokenExpr[i + 1]) || tokenExpr[i + 1] === "(") {
+      tokenExpr.splice(i + 1, 0, "*");
+      i++;
+    }
+  }
+
+  for (let i = 0; i < tokenExpr.length; i++) {
+    if (!/[a-zA-Z]+/g.test(tokenExpr[i])) continue;
+    if (!isNaN(tokenExpr[i - 1])) {
+      tokenExpr.splice(i, 0, "*");
+      i++;
+    }
+    if (!isNaN(tokenExpr[i + 1]) && !canUseFuncNames.includes(tokenExpr[i])) {
+      tokenExpr.splice(i + 1, 0, "*");
+      i++;
+    }
+  }
+  return tokenExpr;
+};
+
+const evalSubExprMulAndDiv = (subExpr) => {
+  let tokens = [...subExpr];
+  formatting(tokens);
+  let numList = [];
+  let othersList = [];
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    if (
+      (!isNaN(+tokens[i]) || tokens[i] === "*" || tokens[i] === "/") &&
+      tokens[i]
+    ) {
+      numList.unshift(tokens[i]);
+      continue;
+    } else {
+      if (canUseSigns.includes(tokens[i - 1]) && tokens[i - 1]) {
+        othersList.unshift(tokens[i]);
+        othersList.unshift(tokens[i - 1]);
+        i--;
+        continue;
+      } else {
+        othersList.unshift(tokens[i]);
+        continue;
+      }
+    }
+  }
+  if (canUseSigns.includes(numList[0])) {
+    numList.unshift("1");
+  }
+  if (
+    !canUseSigns.includes(othersList[0]) &&
+    othersList[0] &&
+    numList.length !== 0
+  ) {
+    othersList.unshift("*");
+  }
+  console.log(`MULnumList: ${numList}`);
+  console.log(`MULothersList: ${othersList}`);
+  mulOrDivFunc(numList);
+  let othersObj = {};
+  for (let i = othersList.length - 1; i >= 0; i--) {
+    if (othersList[i] !== "*" && othersList[i] !== "/" && othersList[i]) {
+      othersObj[`other${i}`] = {};
+      othersObj[`other${i}`]["sym"] = othersList[i - 1]
+        ? othersList[i - 1]
+        : "*";
+      let othersToken =
+        othersList[i].match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) ||
+        [];
+      combineMul(othersToken);
+      console.log(`MULothersToken: ${othersToken}`);
+      othersObj[`other${i}`]["tokens"] = othersToken;
+    }
+  }
+  console.log(`MULothersObj: ${JSON.stringify(othersObj, null, 1)}`);
+  const allKeys = Object.keys(othersObj);
+  let resultList = [];
+  let divList = [];
+  let notDivList = [];
+  for (let i = 0; i < allKeys.length; i++) {
+    if (othersObj[allKeys[i]]["sym"] === "/") {
+      divList.push([...othersObj[allKeys[i]]["tokens"]]);
+      delete othersObj[allKeys[i]];
+    }
+  }
+  for (let key in othersObj) {
+    notDivList.push([...othersObj[key]["tokens"]]);
+  }
+  console.log(
+    `MUL-NEW-NEWothersObj: ${JSON.stringify(
+      othersObj,
+      null,
+      1
+    )}, DIVdivList: ${divList}, NOTDIVnotDivList: ${notDivList}`
+  );
+  for (let i = 0; i < divList.length; i++) {
+    if (divList[i] && divList[i + 1]) {
+      const result = polynomialMul([divList[i], divList[i + 1]]);
+      divList.splice(i, 2, result);
+      i--;
+    }
+  }
+  for (let i = 0; i < notDivList.length; i++) {
+    if (notDivList[i] && notDivList[i + 1]) {
+      const result = polynomialMul([notDivList[i], notDivList[i + 1]]);
+      notDivList.splice(i, 2, result);
+      i--;
+    }
+  }
+  // const divResult = [...divList];
+  // const notDivResult = [...notDivList];
+  console.log(`MULdivResult: ${divList}, MULnotDivResult: ${notDivList}`);
+  console.log(`MULnumList: ${numList}, MULnotDivResult: ${notDivList}`);
+  let finalResult = polynomialMul([
+    [...numList],
+    notDivList[0] ? notDivList[0] : [],
+  ]);
+  if (divList.length !== 0) {
+    finalResult.unshift("(");
+    finalResult.push(")", "/", "(");
+    finalResult.push(...divList[0]);
+    finalResult.push(")");
+  }
+  finalResult = finalResult.join("");
+  finalResult = finalResult.match(/\-|\+|\(|\)|[^-+()]+/g);
+  for (let i = 0; i < finalResult.length; i++) {
+    if (finalResult[i] === "(") {
+      const rightBracketIndex = finalResult.indexOf(")", i);
+      finalResult.splice(
+        i,
+        rightBracketIndex - i + 1,
+        finalResult.slice(i, rightBracketIndex + 1).join("")
+      );
+    }
+  }
+  combineMul(finalResult);
+  console.log(`MULfinalResult: ${finalResult}`);
+  return {
+    result: finalResult,
+    totalLength: 1,
+  };
+};
+
+const evalSubExprAddAndSub = (subExpr) => {
+  let tokens = [...subExpr];
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i] === "-") {
+      if (
+        (tokens[i + 1].includes("+") || tokens[i + 1].includes("-")) &&
+        !tokens[i + 1].includes("/")
+      ) {
+        let sub =
+          tokens[i + 1].match(
+            /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
+          ) || [];
+        formatting(sub);
+        for (let j = 0; j < sub.length; j++) {
+          if (sub[j] === "-") {
+            sub.splice(j, 1, "+");
+          } else if (sub[j] === "+") {
+            sub.splice(j, 1, "-");
+          }
+        }
+        tokens[i + 1] = sub.join("");
+      }
+    }
+  }
+  for (let i = 0; i < tokens.length; i++) {
+    tokens.splice(
+      i,
+      1,
+      ...(tokens[i].match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) ||
+        [])
+    );
+  }
+  combineBrackets(tokens);
+  formatting(tokens);
+  combineMul(tokens);
+  let numList = [];
+  let othersList = [];
+  for (let i = tokens.length - 1; i >= 0; i--) {
+    if (
+      (!isNaN(+tokens[i]) || tokens[i] === "+" || tokens[i] === "-") &&
+      tokens[i]
+    ) {
+      numList.unshift(tokens[i]);
+      continue;
+    } else {
+      if (canUseSigns.includes(tokens[i - 1]) && tokens[i - 1]) {
+        othersList.unshift(tokens[i]);
+        othersList.unshift(tokens[i - 1]);
+        i--;
+        continue;
+      } else {
+        othersList.unshift(tokens[i]);
+        continue;
+      }
+    }
+  }
+  console.log("FIRST numList: " + numList);
+  console.log("FIRST othersList: " + othersList);
+  if (canUseSigns.includes(numList[0])) {
+    numList.unshift("0");
+  }
+  if (
+    !canUseSigns.includes(othersList[0]) &&
+    othersList[0] &&
+    numList.length !== 0
+  ) {
+    othersList.unshift("+");
+  }
+  addOrSubFunc(numList);
+
+  let othersObj = {};
+  for (let i = othersList.length - 1; i >= 0; i--) {
+    if (othersList[i] !== "-" && othersList[i] !== "+" && othersList[i]) {
+      othersObj[`other${i}`] = {};
+      othersObj[`other${i}`]["sym"] = othersList[i - 1]
+        ? othersList[i - 1]
+        : "+";
+      let othersToken =
+        othersList[i].match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) ||
+        [];
+      let notVariateOrFunction = [...othersToken];
+      let variateOrFunction = [];
+      for (let j = othersToken.length - 1; j >= 0; j--) {
+        if (/^[a-zA-Z]+$/.test(othersToken[j]) && othersToken[j]) {
+          if (allOperators.includes(othersToken[j - 1])) {
+            variateOrFunction.unshift(othersToken[j]);
+            variateOrFunction.unshift(othersToken[j - 1]);
+            notVariateOrFunction.splice(j - 1, 2);
+          } else {
+            variateOrFunction.unshift(othersToken[j]);
+            variateOrFunction.unshift("*");
+            notVariateOrFunction.splice(j, 1);
+          }
+        } else {
+          continue;
+        }
+      }
+      if (notVariateOrFunction.length > 0) {
+        othersObj[`other${i}`]["notVariateOrFunction"] = notVariateOrFunction;
+      } else {
+        othersObj[`other${i}`]["notVariateOrFunction"] = ["1"];
+      }
+      othersObj[`other${i}`]["variateOrFunction"] = variateOrFunction;
+    }
+  }
+  console.log(`othersObj ${JSON.stringify(othersObj, null, 1)}`);
+  const allKeys = Object.keys(othersObj);
+  const sym = "sym";
+  const variateOrFunction = "variateOrFunction";
+  const notVariateOrFunction = "notVariateOrFunction";
+  let resultList = [];
+  for (let key in othersObj) {
+    const otherKeys = allKeys.filter((k) => k !== key);
+    // const otherKeys = [...allKeys];
+    // otherKeys.splice(allKeys.indexOf(key), 1);
+    let sameKeyList = [];
+    for (let i = 0; i < otherKeys.length; i++) {
+      if (
+        othersObj[otherKeys[i]] &&
+        othersObj[key] &&
+        othersObj[key][variateOrFunction] &&
+        othersObj[otherKeys[i]][variateOrFunction]
+      ) {
+        if (
+          JSON.stringify(othersObj[key][variateOrFunction]) ===
+          JSON.stringify(othersObj[otherKeys[i]][variateOrFunction])
+        ) {
+          sameKeyList.push(otherKeys[i]);
+        }
+      } else {
+        console.log(`没有该键`);
+      }
+    }
+    // if (sameKeyList.length === 0) {
+    //   sameKeyList.push(key);
+    // }
+    console.log(`sameKeyList: ${sameKeyList}`);
+    if (sameKeyList.length > 0) {
+      let _sameList = [];
+      for (let sameKey of sameKeyList) {
+        console.log(
+          `此次 key: ${sameKey} 此次 sym: ${othersObj[sameKey][sym]} 此次非变量或函数：${othersObj[sameKey][notVariateOrFunction]}`
+        );
+        _sameList.push(othersObj[sameKey][sym]);
+        _sameList.push(...othersObj[sameKey][notVariateOrFunction]);
+      }
+
+      console.log(`_sameList: ${_sameList}`);
+
+      const target = [
+        othersObj[key][sym],
+        ...othersObj[key][notVariateOrFunction],
+        ..._sameList,
+      ];
+      // console.log("IMPORTANT" + othersObj[key][sym]);
+      // console.log(othersObj[key][notVariateOrFunction]);
+      // console.log(_sameList);
+      // console.log(target);
+
+      let simplifiedResult = `${addOrSubFunc(mulOrDivFunc(target))}${othersObj[
+        key
+      ][variateOrFunction].join("")}`;
+
+      if (!allOperators.includes(simplifiedResult[0])) {
+        simplifiedResult = "+" + simplifiedResult;
+      }
+      resultList.unshift(simplifiedResult);
+      console.log(`有相同的项 resultList: ${resultList}`);
+      delete othersObj[key];
+      for (let key of sameKeyList) {
+        delete othersObj[key];
+      }
+    } else {
+      console.log(`没有相同的项`);
+      let simplifiedResult = `${othersObj[key][sym]}${othersObj[key][
+        notVariateOrFunction
+      ].join("")}${othersObj[key][variateOrFunction].join("")}`;
+      resultList.unshift(simplifiedResult);
+      console.log(`没有相同的项 resultList: ${resultList}`);
+      delete othersObj[key];
+    }
+  }
+
+  // 在化简逻辑结束后，将 othersObj 中的剩余项重新构建到 othersList 中
+  // othersList = [];
+  othersList = [resultList.join("")];
+  if (othersList[0][0] === "+" && numList.length === 0 && othersList) {
+    othersList[0] = othersList[0].slice(1);
+  }
+
+  console.log("numList: " + numList);
+  console.log("otherList: " + othersList);
+  const numResult = numList.join("");
+  const finalResult = `${numResult}${othersList.join("")}`;
+  console.log("finalResult: " + finalResult);
+  return {
+    result: finalResult,
+    totalLength: 1,
+  };
+};
+
 export function calculate(expr) {
   try {
-    const finalFormatting = (res) => {
-      let tokens = res;
-      if (Array.isArray(tokens)) {
-        tokens = tokens.join("");
-      }
-      tokens =
-        tokens.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
-      combineBrackets(tokens);
-      formatting(tokens);
-      combineMul(tokens);
-      console.log(`finalFormatting: ${tokens}`);
-      for (let i = 0; i < tokens.length; i++) {
-        if (tokens[i].includes("*") || tokens[i].includes("/")) {
-          let final;
-          for (let j = tokens[i].length - 1; j >= 0; j--) {
-            if (!isNaN(tokens[i][j])) {
-              const number = tokens[i].slice(0, j + 1);
-              const others = tokens[i].slice(j + 1);
-              const result = mulOrDivFunc(
-                number.match(
-                  /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-                ) || []
-              );
-              if (result.length === 1 && result[0] === "0") {
-                final = "0";
-                break;
-              }
-              if (
-                result.length === 1 &&
-                result[0] === "1" &&
-                others[0] === "*"
-              ) {
-                final = others.slice(1);
-                break;
-              }
-              final = result.join("") + others;
-              break;
-            }
-          }
-          if (final) {
-            tokens.splice(i, 1, final);
-          }
-        }
-      }
-      for (let i = 0; i < tokens.length; i++) {}
-      tokens = tokens.join("");
-      tokens = tokens.replace(/\+0|0\+/g, "");
-      tokens = tokens.replace(/^0\-/g, "-");
-      tokens = tokens.replace(/^\+/g, "");
-      return tokens;
-    };
-
-    const addOrSubFunc = (numList) => {
-      formatting(numList);
-      for (let i = 0; i < numList.length; i++) {
-        if (numList[i] === "+" || numList[i] === "-") {
-          const a = +numList[i - 1],
-            b = +numList[i + 1];
-          if (isNaN(a) || isNaN(b)) {
-            if (
-              allOperators.includes(numList[i + 1]) ||
-              allOperators.includes(numList[i - 1]) ||
-              !numList[i - 1] ||
-              !numList[i + 1]
-            ) {
-              throw new Error(
-                "There is no can use object before or after '+' or '-'" +
-                  "numList: " +
-                  numList
-              );
-            }
-          }
-          numList.splice(i - 1, 3, numList[i] === "+" ? a + b : a - b);
-          i--;
-          continue;
-        }
-      }
-      return numList;
-    };
-
-    const mulOrDivFunc = (numList) => {
-      formatting(numList);
-      for (let i = 0; i < numList.length; i++) {
-        if (numList[i] === "*" || numList[i] === "/") {
-          const a = +numList[i - 1],
-            b = +numList[i + 1];
-          if (numList[i] === "/" && numList[i + 1] === "0") {
-            throw new Error("You can't divide by 0");
-          }
-          if (isNaN(a) || isNaN(b)) {
-            if (
-              allOperators.includes(numList[i + 1]) ||
-              allOperators.includes(numList[i - 1]) ||
-              !numList[i - 1] ||
-              !numList[i + 1]
-            ) {
-              throw new Error(
-                "There is no can use object before or after '*' or '/'"
-              );
-            }
-          }
-          numList.splice(
-            i - 1,
-            3,
-            numList[i] === "*" ? String(a * b) : String(a / b)
-          );
-          i--;
-          continue;
-        }
-      }
-      return numList;
-    };
-
-    const combineMul = (tokens) => {
-      let i = 0;
-      while (i < tokens.length) {
-        if (tokens[i] === "*" || tokens[i] === "/") {
-          let subExpr = [tokens[i]];
-          let j = i + 1;
-          let spliceStart = i;
-          if (tokens[i - 1]) {
-            subExpr.unshift(tokens[i - 1]);
-            spliceStart--;
-          }
-          if (tokens[i + 1]) {
-            subExpr.push(tokens[i + 1]);
-            j++;
-          }
-          const signsInsteatOfMulAndDiv = allCanUseSigns.filter(
-            (sign) => sign !== "*" && sign !== "/"
-          );
-          while (
-            !signsInsteatOfMulAndDiv.includes(tokens[j]) &&
-            j < tokens.length &&
-            tokens[j]
-          ) {
-            subExpr.push(tokens[j]);
-            j++;
-            continue;
-          }
-          tokens.splice(spliceStart, subExpr.length, subExpr.join(""));
-          continue;
-        } else i++;
-      }
-    };
-
-    const combineBrackets = (tokens) => {
-      for (let i = 0; i < tokens.length; i++) {
-        if (tokens[i] === "(") {
-          const rightBracketIndex = tokens.indexOf(")", i);
-          tokens.splice(
-            i,
-            rightBracketIndex - i + 1,
-            tokens.slice(i, rightBracketIndex + 1).join("")
-          );
-        }
-      }
-    };
-
-    const polynomialMul = (allTokens) => {
-      for (let i = 0; i < allTokens.length; i++) {
-        if (allTokens[i].length === 0) {
-          allTokens.splice(i, 1);
-        }
-      }
-      if (allTokens.length === 0) {
-        return [];
-      }
-      if (allTokens.length === 1) {
-        return allTokens[0];
-      }
-      let allResult = [];
-      for (let i = 0; i < allTokens[0].length; i++) {
-        const firstSym = allTokens[0][i - 1] === "-" ? 0 : 1;
-        for (let j = 0; j < allTokens[1].length; j++) {
-          const secondSym = allTokens[1][j - 1] === "-" ? 0 : 1;
-          const togetherSym = firstSym === secondSym ? "+" : "-";
-          if (
-            allTokens[0][i] !== "+" &&
-            allTokens[0][i] !== "-" &&
-            allTokens[1][j] !== "+" &&
-            allTokens[1][j] !== "-"
-          ) {
-            if (!isNaN(allTokens[0][i]) && !isNaN(allTokens[1][j])) {
-              const result = String(
-                mulOrDivFunc([allTokens[0][i], "*", allTokens[1][j]])
-              );
-              allResult.push(togetherSym);
-              allResult.push(...result);
-            } else {
-              let firstNum = allTokens[0][i];
-              let secondNum = allTokens[1][j];
-              let firstOther;
-              let secondOther;
-              if (isNaN(allTokens[0][i])) {
-                if (!isNaN(allTokens[0][i])) {
-                  firstNum = allTokens[0][i].slice(0, 1);
-                  firstOther = allTokens[0][i].slice(1);
-                } else {
-                  firstNum = 1;
-                  firstOther = allTokens[0][i];
-                }
-              }
-              if (isNaN(allTokens[1][j])) {
-                if (!isNaN(allTokens[1][j])) {
-                  secondNum = allTokens[1][j].slice(0, 1);
-                  secondOther = allTokens[1][j].slice(1);
-                } else {
-                  secondNum = 1;
-                  secondOther = allTokens[1][j];
-                }
-              }
-              let allOther = [firstOther, secondOther];
-              for (let i = 0; i < allOther.length; i++) {
-                if (!allOther[i]) {
-                  allOther.splice(i, 1);
-                }
-              }
-              console.log(allOther);
-              console.log(`firstNum: ${firstNum},  secondNum: ${secondNum}`);
-              const togetherNum = mulOrDivFunc([firstNum, "*", secondNum]);
-              allOther = allOther.join("*");
-              allOther = "*" + allOther;
-              const result = togetherNum.join("") + allOther;
-              allResult.push(togetherSym);
-              allResult.push(result);
-            }
-          }
-        }
-      }
-      return allResult;
-    };
-
-    const conversionOfScientificNotation = (result) => {
-      let tokenResult = result;
-      if (!Array.isArray(tokenResult)) {
-        tokenResult = String(result).match(
-          /((\+|\-)?\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-        );
-      }
-
-      for (let i = 0; i < tokenResult.length; i++) {
-        if (tokenResult[i] === "e") {
-          if (isNaN(tokenResult[i + 1]) || isNaN(tokenResult[i - 1])) continue;
-          const normalNotationExpr = [
-            tokenResult[i - 1],
-            "*",
-            "10",
-            "^",
-            tokenResult[i + 1],
-          ];
-          // +tokenResult[i - 1] * Math.pow(10, +tokenResult[i + 1]);
-          tokenResult.splice(i - 1, 3, normalNotationExpr);
-          i--;
-          continue;
-        } else continue;
-      }
-      return tokenResult;
-    };
-
-    const formatting = (tokenExpr) => {
-      let i = tokenExpr.length - 1;
-      while (i >= 0) {
-        if (tokenExpr[i] === "+" || tokenExpr[i] === "-") {
-          if (
-            (allOperators.includes(tokenExpr[i - 1]) || !tokenExpr[i - 1]) && //前面是运算符号或没有值
-            !isNaN(+tokenExpr[i + 1]) //并且后面是个数字
-          ) {
-            tokenExpr.splice(i, 2, tokenExpr[i] + tokenExpr[i + 1]);
-            i--;
-            continue;
-          } else {
-            i--;
-          }
-        } else {
-          i--;
-        }
-      }
-
-      for (let i = 0; i < tokenExpr.length; i++) {
-        if (tokenExpr[i] !== "(") continue;
-        if (!isNaN(tokenExpr[i - 1]) || tokenExpr[i - 1] === ")") {
-          tokenExpr.splice(i, 0, "*");
-          i++;
-        }
-      }
-
-      for (let i = 0; i < tokenExpr.length; i++) {
-        if (tokenExpr[i] !== ")") continue;
-        if (!isNaN(tokenExpr[i + 1]) || tokenExpr[i + 1] === "(") {
-          tokenExpr.splice(i + 1, 0, "*");
-          i++;
-        }
-      }
-
-      for (let i = 0; i < tokenExpr.length; i++) {
-        if (!/[a-zA-Z]+/g.test(tokenExpr[i])) continue;
-        if (!isNaN(tokenExpr[i - 1])) {
-          tokenExpr.splice(i, 0, "*");
-          i++;
-        }
-        if (
-          !isNaN(tokenExpr[i + 1]) &&
-          !canUseFuncNames.includes(tokenExpr[i])
-        ) {
-          tokenExpr.splice(i + 1, 0, "*");
-          i++;
-        }
-      }
-      return tokenExpr;
-    };
-
-    const evalSubExprMulAndDiv = (subExpr) => {
-      let tokens = [...subExpr];
-      formatting(tokens);
-      let numList = [];
-      let othersList = [];
-      for (let i = tokens.length - 1; i >= 0; i--) {
-        if (
-          (!isNaN(+tokens[i]) || tokens[i] === "*" || tokens[i] === "/") &&
-          tokens[i]
-        ) {
-          numList.unshift(tokens[i]);
-          continue;
-        } else {
-          if (canUseSigns.includes(tokens[i - 1]) && tokens[i - 1]) {
-            othersList.unshift(tokens[i]);
-            othersList.unshift(tokens[i - 1]);
-            i--;
-            continue;
-          } else {
-            othersList.unshift(tokens[i]);
-            continue;
-          }
-        }
-      }
-      if (canUseSigns.includes(numList[0])) {
-        numList.unshift("1");
-      }
-      if (
-        !canUseSigns.includes(othersList[0]) &&
-        othersList[0] &&
-        numList.length !== 0
-      ) {
-        othersList.unshift("*");
-      }
-      console.log(`MULnumList: ${numList}`);
-      console.log(`MULothersList: ${othersList}`);
-      mulOrDivFunc(numList);
-      let othersObj = {};
-      for (let i = othersList.length - 1; i >= 0; i--) {
-        if (othersList[i] !== "*" && othersList[i] !== "/" && othersList[i]) {
-          othersObj[`other${i}`] = {};
-          othersObj[`other${i}`]["sym"] = othersList[i - 1]
-            ? othersList[i - 1]
-            : "*";
-          let othersToken =
-            othersList[i].match(
-              /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-            ) || [];
-          combineMul(othersToken);
-          console.log(`MULothersToken: ${othersToken}`);
-          othersObj[`other${i}`]["tokens"] = othersToken;
-        }
-      }
-      console.log(`MULothersObj: ${JSON.stringify(othersObj, null, 1)}`);
-      const allKeys = Object.keys(othersObj);
-      let resultList = [];
-      let divList = [];
-      let notDivList = [];
-      for (let i = 0; i < allKeys.length; i++) {
-        if (othersObj[allKeys[i]]["sym"] === "/") {
-          divList.push([...othersObj[allKeys[i]]["tokens"]]);
-          delete othersObj[allKeys[i]];
-        }
-      }
-      for (let key in othersObj) {
-        notDivList.push([...othersObj[key]["tokens"]]);
-      }
-      console.log(
-        `MUL-NEW-NEWothersObj: ${JSON.stringify(
-          othersObj,
-          null,
-          1
-        )}, DIVdivList: ${divList}, NOTDIVnotDivList: ${notDivList}`
-      );
-      for (let i = 0; i < divList.length; i++) {
-        if (divList[i] && divList[i + 1]) {
-          const result = polynomialMul([divList[i], divList[i + 1]]);
-          divList.splice(i, 2, result);
-          i--;
-        }
-      }
-      for (let i = 0; i < notDivList.length; i++) {
-        if (notDivList[i] && notDivList[i + 1]) {
-          const result = polynomialMul([notDivList[i], notDivList[i + 1]]);
-          notDivList.splice(i, 2, result);
-          i--;
-        }
-      }
-      // const divResult = [...divList];
-      // const notDivResult = [...notDivList];
-      console.log(`MULdivResult: ${divList}, MULnotDivResult: ${notDivList}`);
-      console.log(`MULnumList: ${numList}, MULnotDivResult: ${notDivList}`);
-      let finalResult = polynomialMul([
-        [...numList],
-        notDivList[0] ? notDivList[0] : [],
-      ]);
-      if (divList.length !== 0) {
-        finalResult.unshift("(");
-        finalResult.push(")", "/", "(");
-        finalResult.push(...divList[0]);
-        finalResult.push(")");
-      }
-      finalResult = finalResult.join("");
-      finalResult = finalResult.match(/\-|\+|\(|\)|[^-+()]+/g);
-      for (let i = 0; i < finalResult.length; i++) {
-        if (finalResult[i] === "(") {
-          const rightBracketIndex = finalResult.indexOf(")", i);
-          finalResult.splice(
-            i,
-            rightBracketIndex - i + 1,
-            finalResult.slice(i, rightBracketIndex + 1).join("")
-          );
-        }
-      }
-      combineMul(finalResult);
-      console.log(`MULfinalResult: ${finalResult}`);
-      return {
-        result: finalResult,
-        totalLength: 1,
-      };
-    };
-
-    const evalSubExprAddAndSub = (subExpr) => {
-      let tokens = [...subExpr];
-      for (let i = 0; i < tokens.length; i++) {
-        if (tokens[i] === "-") {
-          if (
-            (tokens[i + 1].includes("+") || tokens[i + 1].includes("-")) &&
-            !tokens[i + 1].includes("/")
-          ) {
-            let sub =
-              tokens[i + 1].match(
-                /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-              ) || [];
-            formatting(sub);
-            for (let j = 0; j < sub.length; j++) {
-              if (sub[j] === "-") {
-                sub.splice(j, 1, "+");
-              } else if (sub[j] === "+") {
-                sub.splice(j, 1, "-");
-              }
-            }
-            tokens[i + 1] = sub.join("");
-          }
-        }
-      }
-      for (let i = 0; i < tokens.length; i++) {
-        tokens.splice(
-          i,
-          1,
-          ...(tokens[i].match(
-            /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-          ) || [])
-        );
-      }
-      combineBrackets(tokens);
-      formatting(tokens);
-      combineMul(tokens);
-      let numList = [];
-      let othersList = [];
-      for (let i = tokens.length - 1; i >= 0; i--) {
-        if (
-          (!isNaN(+tokens[i]) || tokens[i] === "+" || tokens[i] === "-") &&
-          tokens[i]
-        ) {
-          numList.unshift(tokens[i]);
-          continue;
-        } else {
-          if (canUseSigns.includes(tokens[i - 1]) && tokens[i - 1]) {
-            othersList.unshift(tokens[i]);
-            othersList.unshift(tokens[i - 1]);
-            i--;
-            continue;
-          } else {
-            othersList.unshift(tokens[i]);
-            continue;
-          }
-        }
-      }
-      console.log("FIRST numList: " + numList);
-      console.log("FIRST othersList: " + othersList);
-      if (canUseSigns.includes(numList[0])) {
-        numList.unshift("0");
-      }
-      if (
-        !canUseSigns.includes(othersList[0]) &&
-        othersList[0] &&
-        numList.length !== 0
-      ) {
-        othersList.unshift("+");
-      }
-      addOrSubFunc(numList);
-
-      let othersObj = {};
-      for (let i = othersList.length - 1; i >= 0; i--) {
-        if (othersList[i] !== "-" && othersList[i] !== "+" && othersList[i]) {
-          othersObj[`other${i}`] = {};
-          othersObj[`other${i}`]["sym"] = othersList[i - 1]
-            ? othersList[i - 1]
-            : "+";
-          let othersToken =
-            othersList[i].match(
-              /(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g
-            ) || [];
-          let notVariateOrFunction = [...othersToken];
-          let variateOrFunction = [];
-          for (let j = othersToken.length - 1; j >= 0; j--) {
-            if (/^[a-zA-Z]+$/.test(othersToken[j]) && othersToken[j]) {
-              if (allOperators.includes(othersToken[j - 1])) {
-                variateOrFunction.unshift(othersToken[j]);
-                variateOrFunction.unshift(othersToken[j - 1]);
-                notVariateOrFunction.splice(j - 1, 2);
-              } else {
-                variateOrFunction.unshift(othersToken[j]);
-                variateOrFunction.unshift("*");
-                notVariateOrFunction.splice(j, 1);
-              }
-            } else {
-              continue;
-            }
-          }
-          if (notVariateOrFunction.length > 0) {
-            othersObj[`other${i}`]["notVariateOrFunction"] =
-              notVariateOrFunction;
-          } else {
-            othersObj[`other${i}`]["notVariateOrFunction"] = ["1"];
-          }
-          othersObj[`other${i}`]["variateOrFunction"] = variateOrFunction;
-        }
-      }
-      console.log(`othersObj ${JSON.stringify(othersObj, null, 1)}`);
-      const allKeys = Object.keys(othersObj);
-      const sym = "sym";
-      const variateOrFunction = "variateOrFunction";
-      const notVariateOrFunction = "notVariateOrFunction";
-      let resultList = [];
-      for (let key in othersObj) {
-        const otherKeys = allKeys.filter((k) => k !== key);
-        // const otherKeys = [...allKeys];
-        // otherKeys.splice(allKeys.indexOf(key), 1);
-        let sameKeyList = [];
-        for (let i = 0; i < otherKeys.length; i++) {
-          if (
-            othersObj[otherKeys[i]] &&
-            othersObj[key] &&
-            othersObj[key][variateOrFunction] &&
-            othersObj[otherKeys[i]][variateOrFunction]
-          ) {
-            if (
-              JSON.stringify(othersObj[key][variateOrFunction]) ===
-              JSON.stringify(othersObj[otherKeys[i]][variateOrFunction])
-            ) {
-              sameKeyList.push(otherKeys[i]);
-            }
-          } else {
-            console.log(`没有该键`);
-          }
-        }
-        // if (sameKeyList.length === 0) {
-        //   sameKeyList.push(key);
-        // }
-        console.log(`sameKeyList: ${sameKeyList}`);
-        if (sameKeyList.length > 0) {
-          let _sameList = [];
-          for (let sameKey of sameKeyList) {
-            console.log(
-              `此次 key: ${sameKey} 此次 sym: ${othersObj[sameKey][sym]} 此次非变量或函数：${othersObj[sameKey][notVariateOrFunction]}`
-            );
-            _sameList.push(othersObj[sameKey][sym]);
-            _sameList.push(...othersObj[sameKey][notVariateOrFunction]);
-          }
-
-          console.log(`_sameList: ${_sameList}`);
-
-          const target = [
-            othersObj[key][sym],
-            ...othersObj[key][notVariateOrFunction],
-            ..._sameList,
-          ];
-          // console.log("IMPORTANT" + othersObj[key][sym]);
-          // console.log(othersObj[key][notVariateOrFunction]);
-          // console.log(_sameList);
-          // console.log(target);
-
-          let simplifiedResult = `${addOrSubFunc(
-            mulOrDivFunc(target)
-          )}${othersObj[key][variateOrFunction].join("")}`;
-
-          if (!allOperators.includes(simplifiedResult[0])) {
-            simplifiedResult = "+" + simplifiedResult;
-          }
-          resultList.unshift(simplifiedResult);
-          console.log(`有相同的项 resultList: ${resultList}`);
-          delete othersObj[key];
-          for (let key of sameKeyList) {
-            delete othersObj[key];
-          }
-        } else {
-          console.log(`没有相同的项`);
-          let simplifiedResult = `${othersObj[key][sym]}${othersObj[key][
-            notVariateOrFunction
-          ].join("")}${othersObj[key][variateOrFunction].join("")}`;
-          resultList.unshift(simplifiedResult);
-          console.log(`没有相同的项 resultList: ${resultList}`);
-          delete othersObj[key];
-        }
-      }
-
-      // 在化简逻辑结束后，将 othersObj 中的剩余项重新构建到 othersList 中
-      // othersList = [];
-      othersList = [resultList.join("")];
-      if (othersList[0][0] === "+" && numList.length === 0 && othersList) {
-        othersList[0] = othersList[0].slice(1);
-      }
-
-      console.log("numList: " + numList);
-      console.log("otherList: " + othersList);
-      const numResult = numList.join("");
-      const finalResult = `${numResult}${othersList.join("")}`;
-      console.log("finalResult: " + finalResult);
-      return {
-        result: finalResult,
-        totalLength: 1,
-      };
-    };
-
+    expr = convertLaTeXToMath(expr);
+    console.log(`expr: ${expr}`);
     let tokens =
       expr.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
     if (tokens.length === 0) {

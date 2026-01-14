@@ -17,7 +17,7 @@ function showResult(actualInputElement, container) {
     container.removeChild(container.querySelector("p.answer"));
     // inputElement.appendChild(answerElement);
   }
-  const result = calculate(actualInputElement.textContent);
+  const result = calculate(actualInputElement.value);
   const answerElement = document.createElement("p");
   answerElement.className = "answer";
   container.appendChild(answerElement);
@@ -47,9 +47,21 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
   const actualInputFrame = actualInputElement.parentElement.parentElement;
   //
   const inputFrames = document.getElementsByClassName("inputFrame");
-  const inputElements = document.getElementsByClassName("input");
+  const inputElements = document.getElementsByClassName("mf");
 
   if (event.key === "Enter") {
+    // 检查当前元素是否是 math-field 或者是否有其他默认的 Enter 键行为
+    // 在 mathlive 中，Enter 键可能有默认行为，所以先检查是否已被处理
+    if (event.defaultPrevented) {
+      // 如果默认行为已经被处理，则不执行我们的逻辑
+      return;
+    }
+
+    // 检测是否有特殊键组合 (如 Shift+Enter, Ctrl+Enter 等)
+    if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) {
+      // 如果有特殊键组合，保留原始行为
+      return;
+    }
     event.preventDefault();
     const inputFrame = document.createElement("div");
     inputFrame.className = "inputFrame";
@@ -62,9 +74,9 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
     const inputDetails = document.createElement("div");
     inputDetails.className = "inputDetails";
 
-    const input = document.createElement("div");
-    input.className = "input";
-    input.contentEditable = "true";
+    const input = document.createElement("math-field");
+    input.className = "mf";
+    // input.contentEditable = "true";
 
     // 组装元素结构
     inputDetails.appendChild(input);
@@ -76,7 +88,6 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
       inputFrame,
       actualInputFrame.nextSibling
     );
-    // basicCalculatorContainer.appendChild(inputFrame);
     const inputIndexes = document.getElementsByClassName("inputIndex");
     for (let i = 0; i < inputIndexes.length; i++) {
       inputIndexes[i].textContent = i + 1;
@@ -87,7 +98,7 @@ basicCalculatorContainer.addEventListener("keydown", function (event) {
   }
   if (
     event.key === "Delete" ||
-    (event.key === "Backspace" && actualInputElement.textContent.length === 0)
+    (event.key === "Backspace" && actualInputElement.value.length === 0)
   ) {
     event.preventDefault();
     if (inputFrames.length > 1) {
@@ -144,8 +155,9 @@ basicCalculatorContainer.addEventListener(
 
 basicCalculatorContainer.addEventListener("input", function (event) {
   const inputElement = event.target;
+  console.log(inputElement.value);
   const container = inputElement.parentElement;
-  const currentValue = inputElement.textContent;
+  const currentValue = inputElement.value;
   const i = currentValue.length - 1;
   if (currentValue[i] === "=") {
     showResult(inputElement, container);
