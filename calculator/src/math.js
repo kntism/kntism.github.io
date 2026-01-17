@@ -1,4 +1,6 @@
 import {
+  findTrueValue,
+  replaceUnit,
   settings,
   canUseUnit,
   canUseFunc,
@@ -16,8 +18,6 @@ const convertLaTeXToMath = (latex) => {
   // 使用 MathLive 将 LaTeX 转换为纯文本数学表达式
   return convertLatexToAsciiMath(latex);
 };
-
-console.log(convertLaTeXToMath("\\frac12"));
 
 const finalFormatting = (res) => {
   let tokens = res;
@@ -309,11 +309,15 @@ const formatting = (tokenExpr) => {
 
   for (let i = 0; i < tokenExpr.length; i++) {
     if (!/[a-zA-Z]+/g.test(tokenExpr[i])) continue;
-    if (!isNaN(tokenExpr[i - 1])) {
+    if (!isNaN(tokenExpr[i - 1]) && !canUseUnit.includes(tokenExpr[i])) {
       tokenExpr.splice(i, 0, "*");
       i++;
     }
-    if (!isNaN(tokenExpr[i + 1]) && !canUseFuncNames.includes(tokenExpr[i])) {
+    if (
+      !isNaN(tokenExpr[i + 1]) &&
+      !canUseFuncNames.includes(tokenExpr[i]) &&
+      !canUseUnit.includes(tokenExpr[i])
+    ) {
       tokenExpr.splice(i + 1, 0, "*");
       i++;
     }
@@ -646,14 +650,43 @@ const evalSubExprAddAndSub = (subExpr) => {
 export function calculate(expr) {
   try {
     expr = convertLaTeXToMath(expr);
+    expr = replaceUnit(expr);
     console.log(`expr: ${expr}`);
     let tokens =
       expr.match(/(\d+\.?\d*|[a-zA-Z]+|\+|\-|\*|\/|\(|\)|\,|\^)/g) || [];
     if (tokens.length === 0) {
       throw new Error("There is no expression");
     }
-    formatting(tokens);
     console.log("+++++tokens: " + tokens);
+    for (let i = tokens.length - 1; i >= 0; i--) {
+      if (canUseUnit.includes(tokens[i]) && isNaN(+tokens[i - 1])) {
+        throw new Error("There is no number / can use object behind the unit");
+      }
+    }
+    formatting(tokens);
+
+    const _degORad_T = String(findTrueValue(settings.degreeOrRad));
+
+    switch (_degORad_T) {
+      case "general":
+        break;
+      case "degree":
+        for (let i = 0; i < tokens.length; i++) {
+          if (tokens[i] === "rad") {
+            throw new Error(`You can't use rad in degree mode`);
+          }
+        }
+        break;
+      case "rad":
+        for (let i = 0; i < tokens.length; i++) {
+          if (tokens[i] === "deg") {
+            throw new Error(`You can't use deg in rad mode`);
+          }
+        }
+        break;
+      default:
+        break;
+    }
     const cal = (tokenExpr) => {
       let i = tokenExpr.length - 1;
       while (i >= 0) {
@@ -670,7 +703,9 @@ export function calculate(expr) {
             throw new Error("There are unknown functions: " + tokenExpr[i]);
           }
           if (isNaN(+tokenExpr[i + 1])) {
-            throw new Error("There is no number behind the function");
+            throw new Error(
+              "There is no number / can use object behind the function"
+            );
           }
           let value = [];
           for (
@@ -684,14 +719,17 @@ export function calculate(expr) {
           }
           let valueLength = value.length;
           for (let m = 0; m < value.length; m++) {
-            if (isNaN(+value[m])) {
+            if (isNaN(+value[m]) && !canUseUnit.includes(value[m])) {
               value.splice(m, 1);
             }
           }
           if (
             canUseFunc[tokenExpr[i]].toolFunc.checkValueAmount(value) === false
           ) {
-            if (canUseFunc[tokenExpr[i]].unit.length === 1) {
+            if (
+              canUseFunc[tokenExpr[i]].unit.length === 1 &&
+              !canUseUnit.some((item) => value.includes(item))
+            ) {
               value = [value[0]];
               valueLength = 1;
             } else {
@@ -704,10 +742,20 @@ export function calculate(expr) {
               );
             }
           }
+          if (canUseFunc[tokenExpr[i]].toolFunc.unitTransition) {
+            canUseFunc[tokenExpr[i]].toolFunc.unitTransition(
+              value,
+              String(tokenExpr[i])
+            );
+          } else {
+            if (canUseUnit.some((item) => value.includes(item))) {
+              throw new Error(`You can't use unit in function ${tokenExpr[i]}`);
+            }
+          }
           let funcResult = canUseFunc[tokenExpr[i]].func(value);
           funcResult = conversionOfScientificNotation(funcResult);
           tokenExpr.splice(i, valueLength + 1, ...funcResult);
-          console.log(`函数计算完毕,tokens为:${tokenExpr}`);
+          console.log(`函数计算完毕，tokens 为:${tokenExpr}`);
           i--;
         } else i--;
       }

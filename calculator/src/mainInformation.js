@@ -1,7 +1,3 @@
-const normalOneValueChack = function (value) {
-  return value.length === 1 ? true : false;
-};
-
 const canUseFunc = {
   sin: {
     func: function (radians) {
@@ -9,7 +5,7 @@ const canUseFunc = {
     },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: trigonometricFunctionsUnitTran,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -19,7 +15,7 @@ const canUseFunc = {
     },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: trigonometricFunctionsUnitTran,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -29,7 +25,7 @@ const canUseFunc = {
     },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: trigonometricFunctionsUnitTran,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -39,7 +35,7 @@ const canUseFunc = {
     },
     unit: [["deg", "rad", "#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: trigonometricFunctionsUnitTran,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -49,7 +45,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -59,7 +55,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -69,7 +65,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -79,7 +75,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -89,7 +85,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -99,7 +95,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -109,7 +105,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -119,7 +115,7 @@ const canUseFunc = {
     },
     unit: [["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: normalOneValueChack,
     },
   },
@@ -129,7 +125,7 @@ const canUseFunc = {
     },
     unit: [["#"], ["#"]],
     toolFunc: {
-      unitTransition: function (value) {},
+      unitTransition: null,
       checkValueAmount: function (value) {
         return value.length === 2 ? true : false;
       },
@@ -230,7 +226,45 @@ const settings = {
   language: { en: true, zh: false },
 };
 
+function replaceUnit(expr) {
+  let newExpr = expr.replace(/°/g, "deg");
+  newExpr = newExpr.replace(/\\lceil(.+?)\\rceil/g, "ceil($1)");
+  newExpr = newExpr.replace(/\\lfloor(.+?)\\rfloor/g, "floor($1)");
+  newExpr = newExpr.replace(/r a d/g, "rad");
+  return newExpr;
+}
+function trigonometricFunctionsUnitTran(value, funcName) {
+  for (let i = 0; i < value.length; i++) {
+    if (/^[a-zA-Z]+$/.test(value[i])) {
+      if (value[i] === "rad") {
+        value.splice(i, 1);
+      } else if (value[i] === "deg") {
+        value.splice(i - 1, 2, (+value[i - 1] * Math.PI) / 180);
+      } else if (
+        !canUseQuantityNames.includes(value[i]) &&
+        !canUseFuncNames.includes(value[i])
+      ) {
+        throw new Error(
+          `You can't use unit ${value[i]} in ${funcName}  value: ${value}`
+        );
+      }
+    }
+  }
+}
+
+function normalOneValueChack(value) {
+  return value.filter((v) => !canUseUnit.includes(v)).length === 1
+    ? true
+    : false;
+}
+
+function findTrueValue(obj) {
+  return Object.keys(obj).find((key) => obj[key] === true);
+}
+
 export {
+  findTrueValue,
+  replaceUnit,
   canUseFunc,
   canUseSigns,
   allCanUseSigns,

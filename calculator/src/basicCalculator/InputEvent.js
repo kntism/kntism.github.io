@@ -15,7 +15,6 @@ function focusOnDiv(divElement) {
 function showResult(actualInputElement, container) {
   if (container.querySelector("p.answer")) {
     container.removeChild(container.querySelector("p.answer"));
-    // inputElement.appendChild(answerElement);
   }
   const result = calculate(actualInputElement.value);
   const answerElement = document.createElement("p");
