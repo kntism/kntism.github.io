@@ -11,14 +11,6 @@ const basicCalculatorContainer = document.getElementById("basicCalculator");
 let lastContent = "";
 basicCalculatorContainer.addEventListener("input", function (event) {
   const inputElement = event.target;
-  // let hintFrame = inputElement.nextElementSibling;
-  // if (!hintFrame || !hintFrame.classList.contains("hint-frame")) {
-  //   hintFrame = document.createElement("div");
-  //   hintFrame.className = "abrazineGlassStyle hinkFrame";
-  //   hintFrame.style.display = "none";
-  //   hintFrame.style.position = "absolute";
-  //   inputElement.parentNode.insertBefore(hintFrame, inputElement.nextSibling);
-  // }
   const existHinkFrames = document.getElementsByClassName("hinkFrame");
   if (existHinkFrames.length > 0) {
     for (const existHinkFrame of existHinkFrames) {
@@ -39,9 +31,10 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     return [rect.left, rect.top];
   }
   const [cursorLeft, cursorTop] = getCursorGlobalPosition();
+  console.log(`cursorLeft: ${cursorLeft}, cursorTop: ${cursorTop}`);
 
   //newValue
-  const inputValue = inputElement.textContent || "";
+  const inputValue = inputElement.value || "";
   const inputText = inputValue.match(/([a-zA-Z]+|[^a-zA-Z()]+|\(|\))/g) || [];
   // const startOffset = inputElement.selectionStart;
   const selection = window.getSelection();
@@ -70,7 +63,7 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   }
   let newValue = cursorToken;
   //hint
-  hintFrame.textContent = "";
+  hintFrame.value = "";
   hintFrame.style.display = "none";
   if (newValue.length <= maxCanUseFuncLength && newValue.length !== 0) {
     for (let i = 0; i < canUseFuncNames.length; i++) {
@@ -91,10 +84,10 @@ basicCalculatorContainer.addEventListener("input", function (event) {
   if (
     cursorToken === "(" &&
     index !== undefined &&
-    inputElement.textContent.length > lastContent.length
+    inputElement.value.length > lastContent.length
   ) {
     const brackets = document.createElement("span");
-    brackets.textContent = ")";
+    brackets.value = ")";
     inputElement.insertBefore(brackets, inputElement.childNodes[index + 1]);
 
     // 设置光标位置到括号内
@@ -109,5 +102,5 @@ basicCalculatorContainer.addEventListener("input", function (event) {
     selection.removeAllRanges();
     selection.addRange(range);
   }
-  lastContent = inputElement.textContent;
+  lastContent = inputElement.value;
 });
